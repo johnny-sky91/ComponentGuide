@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>ComponentGuide - {{ title }}</title>
+        <link rel="icon" type="image/ico" href="{{ url_for('static', filename='favicon.ico') }}">
+        <!-- <link rel="stylesheet" type="text/css" href="/static/styles.css"> -->
+        {{ moment.include_moment() }}
+
+    </head>
+    <body>
+        <!-- menu -->
+        <div class="menu">
+            <div> 
+                <a href="/">Components</a></a>
+                <a href="/">Projects</a></a>
+                <a href="/">Other</a></a>
+            </div>
+            <a>Date: {{ moment(current_date ).format('DD/MM/YYYY') }}, Current week: {{ week_number }}</a>
+        </div>
+        <!-- content -->
+        <div class="container">
+            <div class="text-left mt-5">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul>{% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+                <hr>
+                <p class="lead">{% block content %}{% endblock %}</p>
+            </div>
+        </div>
+    </body>
+</html>
