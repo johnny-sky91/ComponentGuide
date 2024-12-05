@@ -3,3 +3,4 @@
 app.db
 .flaskenv
 migrations
+test.py
