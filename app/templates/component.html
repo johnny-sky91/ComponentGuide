@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<tbody>
+    <style>
+    table {
+        font-size: 16px;
+    }
+    </style>
+    <a href="{{ url_for('next_component', step='back', id=component.id) }}">Previous</a>
+    <a href="{{ url_for('next_component', step='forward', id=component.id) }}">Next</a>
+  <table>
+    <tr>
+        <th>ID</th>
+        <td>{{ component.id }}</td>
+    </tr>
+    <tr>
+        <th>Material number</th>
+        <td>{{ component.material_number }}</td>
+    </tr>
+    <tr>
+        <th>Material description</th>
+        <td>{{ component.material_description }}</td>
+    </tr>
+    <tr>
+        <th>Supplier material number</th>
+        <td>{{ component.supplier_material_number }}</td>
+    </tr>
+    <tr>
+        <th>Manufacturer part</th>
+        <td>{{ component.manufacturer_part }}</td>
+    </tr>
+    <tr>
+        <th>Leadtime</th>
+        <td>{{ component.leadtime }}</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>{{ component.status }}</td>
+    </tr>
+    <tr>
+        <th>Note</th>
+        <td>{{ component.note }}</td>
+    </tr>
+    <tr>
+        <th>Check</th>
+        <td>{{ component.check }}</td>
+    </tr>
+    <tr>
+        <th>On shortage</th>
+        <td>{{ component.on_shortage }}</td>
+    </tr>
+    <tr>
+        <th>Incoming shipments qty</th>
+        <td>{{ component.incoming_shipments_qty }}</td>
+    </tr>
+    <tr>
+        <th>Free to order</th>
+        <td>{{ component.free_to_order_qty }}</td>
+    </tr>
+    <tr>
+        <th>Supplier stock</th>
+        <td>{{ component.supplier_stock_qty }}</td>
+    </tr>
+    <tr>
+        <th>Open PO</th>
+        <td>{{ component.open_po_qty }}</td>
+    </tr>
+    <tr>
+        <th>Unit price</th>
+        <td>{{ component.unit_price }}</td>
+    </tr>
+    <tr>
+        <th>Comments</th>
+        <td>TODO</td>
+    </tr>
+  </table>
+</tbody>
+{% endblock %}
