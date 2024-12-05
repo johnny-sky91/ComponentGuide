@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Material number</th>
+                <th>Material description</th>
+                <th>Supplier material number</th>
+                <th>Manufacturer part</th>
+                <th>Leadtime</th>
+                <th>Status</th>
+                <th>Note</th>
+                <th>Check</th>
+                <th>On shortage</th>
+                <th>Incoming shipments</th>
+                <th>FTO</th>
+                <th>Supplier stock</th>
+                <th>Open PO</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% for component in components %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><a href="{{ url_for('component_view', id=component.id) }}">{{ component.material_number }}</a></td>
+                    <td>{{ component.material_description }}</td>
+                    <td>{{ component.supplier_material_number }}</td>
+                    <td>{{ component.manufacturer_part }}</td>
+                    <td>{{ component.leadtime }}</td>
+                    <td>{{ component.status }}</td>
+                    <td>{{ component.note }}</td>
+                    <td>{{ component.check }}</td>
+                    <td>{{ component.on_shortage }}</td>
+                    <td>{{ component.incoming_shipments_qty }}</td>
+                    <td>{{ component.free_to_order_qty }}</td>
+                    <td>{{ component.supplier_stock_qty }}</td>
+                    <td>{{ component.open_po_qty }}</td>
+                </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock %}
