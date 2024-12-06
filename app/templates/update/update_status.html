@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p>Update status of: {{component.manufacturer_part}} </p>
+<p>Current status: {{ component.status }}</p>
+<form action="" method="post" novalidate>
+    {{form.hidden_tag()}}
+    <p style="font-size:18px">
+        {{ form.status.label }}: {{ form.status(style='height: 20px; width:200px') }}<br><br>
+        {{ form.submit() }} <br>
+        {% for error in form.status.errors %}
+        <span style="color: red;">{{ error }}</span>
+        {% endfor %}<br>
+    </p>
+</form>
+{% endblock %}

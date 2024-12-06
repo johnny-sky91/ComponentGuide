@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p>Add new component</p>
+<form action="" method="post" novalidate>
+    {{form.hidden_tag()}}
+    <p style="font-size:18px">
+        1. {{ form.material_number.label }}:<br>{{ form.material_number(style='height: 20px; width:200px') }}<br><br>
+        2. {{ form.material_description.label }}:<br>{{ form.material_description(style='height: 20px; width:200px') }}<br><br>
+        3. {{ form.supplier_material_number.label }}:<br>{{ form.supplier_material_number(style='height: 20px; width:200px') }}<br><br>
+        4. {{ form.manufacturer_part.label }}:<br>{{ form.manufacturer_part(style='height: 20px; width:200px') }}<br><br>
+        {{ form.submit() }} <br>
+        {% for error in form.material_number.errors %}
+        <span style="color: red;">{{ error }}</span>
+        {% endfor %}<br>
+    </p>
+</form>
+{% endblock %}
+

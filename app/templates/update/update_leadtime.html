@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p>Update leadtime of: {{component.manufacturer_part}} </p>
+<p>Current leadtime: {{ component.leadtime }}</p>
+<form action="" method="post" novalidate>
+    {{form.hidden_tag()}}
+    <p style="font-size:18px">
+        {{ form.leadtime.label }}:<br>{{ form.leadtime() }}<br><br>
+        {{ form.submit() }} <br>
+        {% for error in form.leadtime.errors %}
+        <span style="color: red;">{{ error }}</span>
+        {% endfor %}<br>
+    </p>
+</form>
+{% endblock %}

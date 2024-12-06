@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p>Update status of: {{ component.material_number }} </p>
+<p>Current unit price: {{ component.unit_price }}$</p>
+<form action="" method="post" novalidate>
+    {{form.hidden_tag()}}
+    <p style="font-size:18px">
+        {{ form.unit_price.label }}: {{ form.unit_price(style='height: 20px; width:200px') }}<br><br>
+        {{ form.submit() }} <br>
+        {% for error in form.unit_price.errors %}
+        <span style="color: red;">{{ error }}</span>
+        {% endfor %}<br>
+    </p>
+</form>
+{% endblock %}

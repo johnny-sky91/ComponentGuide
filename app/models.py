@@ -8,7 +8,7 @@ class Component(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     material_number = db.Column(db.Integer, unique=True)
-    material_description = db.Column(db.String(64))
+    material_description = db.Column(db.String(64), default=None)
     supplier_material_number = db.Column(db.Integer, unique=True)
     manufacturer_part = db.Column(db.String(64), unique=True)
     leadtime = db.Column(db.Integer, default=0)
@@ -23,9 +23,6 @@ class Component(db.Model):
     open_po_qty = db.Column(db.Integer, default=0)
     unit_price = db.Column(db.Float, default=0.0)
     comments = db.relationship("ComponentComment", backref="component", lazy=True)
-
-    def __repr__(self):
-        return f"<Component {self.name}>"
 
 
 class ComponentComment(db.Model):
