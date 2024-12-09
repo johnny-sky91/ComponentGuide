@@ -85,3 +85,11 @@ class UpdateComponentQty(FlaskForm):
         validators=[],
     )
     submit = SubmitField("Update QTY")
+
+
+class AddComponentComment(FlaskForm):
+    text = TextAreaField(
+        "New comment",
+        validators=[DataRequired(message="New comment can't be empty")],
+    )
+    submit = SubmitField("Add comment")

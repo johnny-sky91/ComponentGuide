@@ -2,21 +2,16 @@
 {% block content %}
 <tbody>
     <style>
-        .container {
-            display: flex;
-            justify-content: space-between;
-        }
         .column {
-            flex: 1;
+            flex: 12;
             margin: 0 5px;
         }
         table {
-            font-size: 16px;
+            font-size: 12px;
             width: 100%;
-            table-layout: fixed; /* Ustawienie stałego układu tabeli */
+            /* table-layout: fixed; */
         }
-
-        </style>
+    </style>
     <a href="{{ url_for('next_component', step='back', id=component.id) }}">Previous</a>
     <a href="{{ url_for('next_component', step='forward', id=component.id) }}">Next</a>
     <table>
@@ -43,11 +38,6 @@
                         <th>Manufacturer part</th>
                         <td>{{ component.manufacturer_part }}</td>
                     </tr>
-                </table>
-            </td>
-            
-            <td>
-                <table>
                     <tr>
                         <th style="width: 30%">Leadtime [weeks]</th>
                         <td><a href="{{ url_for('update_component_leadtime', id=component.id) }}">{{ component.leadtime }}</a></td>
@@ -60,6 +50,14 @@
                         <th>Note</th>
                         <td><a href="{{ url_for('update_component_note', id=component.id) }}">{{ component.note }}</a></td>
                     </tr>
+                </table>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <th>Unit price [$]</th>
+                        <td><a href="{{ url_for('update_component_unit_price', id=component.id) }}">{{ component.unit_price }}</a></td>
+                    </tr>
                     <tr>
                         <th>Check</th>
                         <td><a href="{{ url_for('change_check', id=component.id) }}">{{ component.check }}</a></td>
@@ -68,6 +66,38 @@
                         <th>On shortage</th>
                         <td><a href="{{ url_for('change_shortage', id=component.id) }}">{{ component.on_shortage }}</a></td>
                     </tr>
+                    <tr>
+                        <th>Free to order [QTY]</th>
+                        <td><a href="{{ url_for('update_component_qty', id=component.id, qty_type='free_to_order_qty', qty_name='free to order') }}">{{ component.free_to_order_qty }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>Incoming shipments [QTY]</th>
+                        <td><a href="{{ url_for('update_component_qty', id=component.id, qty_type='incoming_shipments_qty', qty_name='incoming shipments') }}">{{ component.incoming_shipments_qty }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>Supplier stock [QTY]</th>
+                        <td><a href="{{ url_for('update_component_qty', id=component.id, qty_type='supplier_stock_qty', qty_name='supplier stock') }}">{{ component.supplier_stock_qty }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>Open PO [QTY]</th>
+                        <td><a href="{{ url_for('update_component_qty', id=component.id, qty_type='open_po_qty', qty_name='open PO') }}">{{ component.open_po_qty }}</a></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <th><a href="{{ url_for('add_component_comment', id=component.id) }}">Comments:</a></th>
+                    <th>Timestamp</th>
+                    <th>Action</th>
+                    {% for comment in comments %}
+                    <tr>
+                        <td>{{ comment.text }}</td>
+                        <td>{{ moment(comment.timestamp).format('DD/MM/YYYY HH:MM') }}</td>
+                        <td><a href="{{ url_for('remove_component_comment', id=component.id, comment_id=comment.id) }}">Remove</a></td>
+                    </tr>
+                    {% endfor %}
                 </table>
             </td>
         </tr>

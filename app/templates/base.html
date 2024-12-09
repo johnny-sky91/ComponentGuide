@@ -5,17 +5,19 @@
         <link rel="icon" type="image/ico" href="{{ url_for('static', filename='favicon.ico') }}">
         <link rel="stylesheet" type="text/css" href="/static/styles.css">
         {{ moment.include_moment() }}
-
     </head>
     <body>
         <!-- menu -->
         <div class="menu">
             <div> 
-                <a href="/all_components">Components</a></a>
-                <a href="/">Projects</a></a>
-                <a href="/">Other</a></a>
+                <a href="/all_components">Components</a>
+                <a href="/incoming_shipments">Incoming shipments</a>
+                <a href="/">Supplier stock</a>
+                <a href="/">Supplier shipments</a>
+                <a href="/">Projects</a>
+                <a href="/">Other</a>
             </div>
-            <a>Date: {{ moment(current_date ).format('DD/MM/YYYY') }}, Current week: {{ week_number }}</a>
+            <a>Date: {{ moment(current_date).format('DD/MM/YYYY') }}, Week {{ week_number }}</a>
         </div>
         <!-- content -->
         <div class="container">

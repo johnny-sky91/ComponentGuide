@@ -15,6 +15,7 @@ from app.models import (
 )
 from app.forms import (
     AddComponent,
+    AddComponentComment,
     UpdateComponentNote,
     UpdateComponentLeadtime,
     UpdateComponentUnitPrice,
@@ -61,13 +62,19 @@ def add_new_component():
     )
 
 
-@app.route("/all_components/component_view/<id>", methods=["GET", "POST"])
+@app.route("/all_components/component_view/<int:id>", methods=["GET", "POST"])
 def component_view(id):
     component = Component.query.get(id)
+    comments = (
+        ComponentComment.query.filter_by(component_id=id)
+        .order_by(ComponentComment.id.desc())
+        .all()
+    )
     return render_template(
         "component.html",
         title=f"{component.material_number}",
         component=component,
+        comments=comments,
     )
 
 
@@ -86,7 +93,9 @@ def next_component(step, id):
         return redirect(url_for("component_view", id=id))
 
 
-@app.route("/all_components/component_view/<id>/change_check", methods=["GET", "POST"])
+@app.route(
+    "/all_components/component_view/<int:id>/change_check", methods=["GET", "POST"]
+)
 def change_check(id):
     component = Component.query.get(id)
     component.check = not component.check
@@ -95,7 +104,8 @@ def change_check(id):
 
 
 @app.route(
-    "/all_components/component_view/<id>/change_on_shortage", methods=["GET", "POST"]
+    "/all_components/component_view/<int:id>/change_on_shortage",
+    methods=["GET", "POST"],
 )
 def change_shortage(id):
     component = Component.query.get(id)
@@ -104,7 +114,9 @@ def change_shortage(id):
     return redirect(request.referrer)
 
 
-@app.route("/all_components/component_view/<id>/update_note", methods=["GET", "POST"])
+@app.route(
+    "/all_components/component_view/<int:id>/update_note", methods=["GET", "POST"]
+)
 def update_component_note(id):
     component = Component.query.get(id)
     form = UpdateComponentNote()
@@ -122,7 +134,7 @@ def update_component_note(id):
 
 
 @app.route(
-    "/all_components/component_view/<id>/update_leadtime", methods=["GET", "POST"]
+    "/all_components/component_view/<int:id>/update_leadtime", methods=["GET", "POST"]
 )
 def update_component_leadtime(id):
     component = Component.query.get(id)
@@ -141,7 +153,7 @@ def update_component_leadtime(id):
 
 
 @app.route(
-    "/all_components/component_view/<id>/update_unit_price", methods=["GET", "POST"]
+    "/all_components/component_view/<int:id>/update_unit_price", methods=["GET", "POST"]
 )
 def update_component_unit_price(id):
     component = Component.query.get(id)
@@ -161,7 +173,9 @@ def update_component_unit_price(id):
 component_statuses = ["Active", "EOL", "POE"]
 
 
-@app.route("/all_components/component_view/<id>/update_status", methods=["GET", "POST"])
+@app.route(
+    "/all_components/component_view/<int:id>/update_status", methods=["GET", "POST"]
+)
 def update_component_status(id):
     form = UpdateComponentStatus()
     component = Component.query.get(id)
@@ -180,10 +194,12 @@ def update_component_status(id):
 
 
 @app.route(
-    "/all_components/component_view/<id>/update_qty/<qty_type>/<qty_name>",
+    "/all_components/component_view/<int:id>/update_qty/<qty_type>/<qty_name>",
     methods=["GET", "POST"],
 )
 def update_component_qty(id, qty_type, qty_name):
+    print(qty_type)
+    print(qty_name)
     form = UpdateComponentQty()
     component = Component.query.get(id)
     qty_current = getattr(component, qty_type)
@@ -199,4 +215,44 @@ def update_component_qty(id, qty_type, qty_name):
         component=component,
         qty_current=qty_current,
         qty_name=qty_name,
+    )
+
+
+@app.route(
+    "/all_components/component_view/<int:id>/add_comment", methods=["GET", "POST"]
+)
+def add_component_comment(id):
+    component = Component.query.get(id)
+    form = AddComponentComment()
+    if form.validate_on_submit():
+        new_comment = ComponentComment(
+            component_id=id,
+            text=form.text.data,
+        )
+        db.session.add(new_comment)
+        db.session.commit()
+        flash(f"New comment added")
+        return redirect(url_for("component_view", id=id))
+    return render_template(
+        f"add/add_comment.html",
+        title=f"{component.material_description}",
+        form=form,
+    )
+
+
+@app.route(
+    "/all_components/component_view/<int:id>/remove_comment/<int:comment_id>",
+    methods=["GET", "POST"],
+)
+def remove_component_comment(id, comment_id):
+    ComponentComment.query.filter_by(id=comment_id, component_id=id).delete()
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@app.route("/incoming_shipments", methods=["GET", "POST"])
+def incoming_shipments():
+    return render_template(
+        f"incoming_shipments.html",
+        title=f"Incoming shipments",
     )
