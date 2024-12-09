@@ -12,7 +12,6 @@ class Component(db.Model):
     supplier_material_number = db.Column(db.Integer, unique=True)
     manufacturer_part = db.Column(db.String(64), unique=True)
     leadtime = db.Column(db.Integer, default=0)
-    component_type = db.Column(db.String(64), default=None)  # TODO to remove?
     status = db.Column(db.String(64), default=None)
     note = db.Column(db.String(160), default=None)
     check = db.Column(db.Boolean, default=False)
@@ -30,4 +29,4 @@ class ComponentComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
     text = db.Column(db.String(160))
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime)
