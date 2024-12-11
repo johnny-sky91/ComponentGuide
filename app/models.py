@@ -17,7 +17,6 @@ class Component(db.Model):
     on_shortage = db.Column(db.Boolean, default=False)
     incoming_shipments_qty = db.Column(db.Integer, default=0)
     free_to_order_qty = db.Column(db.Integer, default=0)
-    supplier_stock_qty = db.Column(db.Integer, default=0)
     open_po_qty = db.Column(db.Integer, default=0)
     unit_price = db.Column(db.Float, default=0.0)
     comments = db.relationship("ComponentComment", backref="component", lazy=True)
@@ -35,10 +34,19 @@ class ComponentComment(db.Model):
 
 
 class SupplierShipment(db.Model):
+    __tablename__ = "supplier_shipment"
     id = db.Column(db.Integer, primary_key=True)
     component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
     supplier_po = db.Column(db.Integer, default=None)
     customer_po = db.Column(db.Integer, default=None)
     asn_qty = db.Column(db.Integer, default=0)
     ssd_qty = db.Column(db.Integer, default=0)
-    mad_date = db.Column(db.Date, default=0)
+    mad_date = db.Column(db.Date, default=None)
+
+
+class SupplierStock(db.Model):
+    __tablename__ = "supplier_stock"
+    id = db.Column(db.Integer, primary_key=True)
+    component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
+    supplier_stock_qty = db.Column(db.Integer, default=0)
+    stock_date = db.Column(db.Date, default=None)

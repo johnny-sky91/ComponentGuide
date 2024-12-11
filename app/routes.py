@@ -15,6 +15,7 @@ from app.models import (
     Component,
     ComponentComment,
     SupplierShipment,
+    SupplierStock,
 )
 from app.forms import (
     AddComponent,
@@ -50,12 +51,6 @@ def all_components():
             ).order_by(Component.id.asc()),
             "title": "Incoming shipments",
         },
-        "supplier_stock": {
-            "query": Component.query.filter(Component.supplier_stock_qty > 0).order_by(
-                Component.id.asc()
-            ),
-            "title": "Supplier stock",
-        },
         "open_po": {
             "query": Component.query.filter(Component.open_po_qty > 0).order_by(
                 Component.id.asc()
@@ -73,6 +68,58 @@ def all_components():
         title=title,
         components=components,
     )
+
+
+@app.route("/supplier_stock", methods=["GET", "POST"])
+def supplier_stock():
+    components_stock = SupplierStock.query.order_by(SupplierStock.component_id.desc())
+    components = [Component.query.get(stock.component_id) for stock in components_stock]
+    supplier_all_stock = zip(components, components_stock)
+    return render_template(
+        "supplier_stock.html",
+        title="Supplier stock",
+        supplier_all_stock=supplier_all_stock,
+    )
+
+
+@app.route("/supplier_stock/update_supplier_stock", methods=["GET", "POST"])
+def update_supplier_stock():
+    SupplierStock.query.delete()
+    db.session.commit()
+    file = request.files["file"]
+    file.save(file.filename)
+    supplier_stock = prepare_supplier_stock_data(stock_file=file)
+    for index, row in supplier_stock.iterrows():
+        try:
+            component = (
+                Component.query.filter_by(material_number=row["Customer Part #"])
+                .first()
+                .id
+            )
+            new_stock = SupplierStock(
+                component_id=component,
+                supplier_stock_qty=row["Qty on Hand"],
+                stock_date=row["Calendar Day"],
+            )
+            db.session.add(new_stock)
+            db.session.commit()
+        except AttributeError:
+            pass
+
+    os.remove(file.filename)
+    return redirect(request.referrer)
+
+
+def prepare_supplier_stock_data(stock_file):
+    data = pd.read_excel(stock_file)
+    ready_list = [
+        "Calendar Day",
+        "Customer Part #",
+        "Qty on Hand",
+    ]
+    ready_data = data[ready_list]
+    ready_data.reset_index(drop=True, inplace=True)
+    return ready_data
 
 
 @app.route("/supplier_shipments", methods=["GET", "POST"])
