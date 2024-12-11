@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+    <form action="{{ url_for('update_supplier_shipments') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file"
+            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+        <input type="submit" value="Upload new data">
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Material number</th>
+                <th>Manufacturer part</th>
+                <th>Supplier PO</th>
+                <th>Customer PO</th>
+                <th>ASN QTY</th>
+                <th>SSD QTY</th>
+                <th>Total QTY</th>
+                <th>MAD date</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% for shipment in all_shipments_info %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><a href="{{ url_for('component_view', id=shipment[0].id) }}">{{ shipment[0].material_number }}</td>
+                    <td>{{ shipment[0].manufacturer_part }}</td>
+                    <td>{{ shipment[1].supplier_po }}</td>
+                    <td>{{ shipment[1].customer_po }}</td>
+                    <td>{{ shipment[1].asn_qty }}</td>
+                    <td>{{ shipment[1].ssd_qty }}</td>
+                    <td>{{ shipment[1].asn_qty + shipment[1].ssd_qty }}</td>
+                    <td>{{ shipment[1].mad_date }}</td>
+                </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock %}

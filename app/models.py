@@ -6,7 +6,6 @@ from datetime import datetime
 class Component(db.Model):
     __tablename__ = "component"
     id = db.Column(db.Integer, primary_key=True)
-
     material_number = db.Column(db.Integer, unique=True)
     material_description = db.Column(db.String(64), default=None)
     supplier_material_number = db.Column(db.Integer, unique=True)
@@ -22,6 +21,9 @@ class Component(db.Model):
     open_po_qty = db.Column(db.Integer, default=0)
     unit_price = db.Column(db.Float, default=0.0)
     comments = db.relationship("ComponentComment", backref="component", lazy=True)
+    supplier_shipment = db.relationship(
+        "SupplierShipment", backref="component", lazy=True
+    )
 
 
 class ComponentComment(db.Model):
@@ -30,3 +32,13 @@ class ComponentComment(db.Model):
     component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
     text = db.Column(db.String(160))
     timestamp = db.Column(db.DateTime)
+
+
+class SupplierShipment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
+    supplier_po = db.Column(db.Integer, default=None)
+    customer_po = db.Column(db.Integer, default=None)
+    asn_qty = db.Column(db.Integer, default=0)
+    ssd_qty = db.Column(db.Integer, default=0)
+    mad_date = db.Column(db.Date, default=0)

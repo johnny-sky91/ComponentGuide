@@ -1,4 +1,6 @@
 from datetime import datetime
+import pandas as pd
+import os
 from flask import (
     render_template,
     flash,
@@ -12,6 +14,7 @@ from app import db
 from app.models import (
     Component,
     ComponentComment,
+    SupplierShipment,
 )
 from app.forms import (
     AddComponent,
@@ -34,13 +37,104 @@ def inject_date_cw():
 @app.route("/")
 @app.route("/all_components", methods=["GET", "POST"])
 def all_components():
-    components = Component.query.order_by(Component.id.asc()).all()
+    filter_type = request.args.get("filter", "all")
+
+    filters = {
+        "all": {
+            "query": Component.query.order_by(Component.id.asc()),
+            "title": "All components",
+        },
+        "incoming_shipments": {
+            "query": Component.query.filter(
+                Component.incoming_shipments_qty > 0
+            ).order_by(Component.id.asc()),
+            "title": "Incoming shipments",
+        },
+        "supplier_stock": {
+            "query": Component.query.filter(Component.supplier_stock_qty > 0).order_by(
+                Component.id.asc()
+            ),
+            "title": "Supplier stock",
+        },
+        "open_po": {
+            "query": Component.query.filter(Component.open_po_qty > 0).order_by(
+                Component.id.asc()
+            ),
+            "title": "Open PO",
+        },
+    }
+
+    selected_filter = filters.get(filter_type, filters["all"])
+    components = selected_filter["query"].all()
+    title = selected_filter["title"]
 
     return render_template(
         "all_components.html",
-        title=f"All components",
+        title=title,
         components=components,
     )
+
+
+@app.route("/supplier_shipments", methods=["GET", "POST"])
+def supplier_shipments():
+    shipments = SupplierShipment.query.order_by(SupplierShipment.component_id.desc())
+    components = [Component.query.get(shipment.component_id) for shipment in shipments]
+    all_shipments_info = zip(components, shipments)
+    return render_template(
+        "supplier_shipments.html",
+        title="Supplier shipments",
+        all_shipments_info=all_shipments_info,
+    )
+
+
+@app.route("/supplier_shipments/update_supplier_shipments", methods=["GET", "POST"])
+def update_supplier_shipments():
+    SupplierShipment.query.delete()
+    db.session.commit()
+    file = request.files["file"]
+    file.save(file.filename)
+    supplier_shipments = prepare_supplier_shipments_data(shipment_file=file)
+    for index, row in supplier_shipments.iterrows():
+        try:
+            component = (
+                Component.query.filter_by(material_number=row["Customer Part #"])
+                .first()
+                .id
+            )
+            new_shipment = SupplierShipment(
+                component_id=component,
+                supplier_po=row["TDS PO #"],
+                customer_po=row["Customer PO #"],
+                asn_qty=row["ASN Qty"],
+                ssd_qty=row["SSD Qty"],
+                mad_date=row["MAD Date"],
+            )
+            db.session.add(new_shipment)
+            db.session.commit()
+        except AttributeError:
+            pass
+
+    os.remove(file.filename)
+    return redirect(request.referrer)
+
+
+def prepare_supplier_shipments_data(shipment_file):
+    data = pd.read_excel(shipment_file)
+    data.columns = data.iloc[0]
+    data = data.iloc[1:, :]
+    data = data[data["Confirmation Type"] == "SSD"]
+    ready_list = [
+        "Customer Part #",
+        "Customer PO #",
+        "TDS PO #",
+        "MAD Date",
+        "SSD Qty",
+        "ASN Qty",
+    ]
+    ready_data = data[ready_list]
+    ready_data.reset_index(drop=True, inplace=True)
+
+    return ready_data
 
 
 @app.route("/all_components/add_new_component", methods=["GET", "POST"])
@@ -65,6 +159,13 @@ def add_new_component():
 @app.route("/all_components/component_view/<int:id>", methods=["GET", "POST"])
 def component_view(id):
     component = Component.query.get(id)
+    supplier_shipments = (
+        SupplierShipment.query.filter_by(component_id=id)
+        .order_by(SupplierShipment.mad_date.desc())
+        .all()
+    )
+    print(supplier_shipments)
+
     comments = (
         ComponentComment.query.filter_by(component_id=id)
         .order_by(ComponentComment.id.desc())
@@ -75,6 +176,7 @@ def component_view(id):
         title=f"{component.material_number}",
         component=component,
         comments=comments,
+        supplier_shipments=supplier_shipments,
     )
 
 
@@ -248,11 +350,3 @@ def remove_component_comment(id, comment_id):
     ComponentComment.query.filter_by(id=comment_id, component_id=id).delete()
     db.session.commit()
     return redirect(request.referrer)
-
-
-@app.route("/incoming_shipments", methods=["GET", "POST"])
-def incoming_shipments():
-    return render_template(
-        f"incoming_shipments.html",
-        title=f"Incoming shipments",
-    )

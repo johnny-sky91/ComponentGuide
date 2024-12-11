@@ -9,7 +9,6 @@
         table {
             font-size: 12px;
             width: 100%;
-            /* table-layout: fixed; */
         }
     </style>
     <a href="{{ url_for('next_component', step='back', id=component.id) }}">Previous</a>
@@ -50,10 +49,6 @@
                         <th>Note</th>
                         <td><a href="{{ url_for('update_component_note', id=component.id) }}">{{ component.note }}</a></td>
                     </tr>
-                </table>
-            </td>
-            <td>
-                <table>
                     <tr>
                         <th>Unit price [$]</th>
                         <td><a href="{{ url_for('update_component_unit_price', id=component.id) }}">{{ component.unit_price }}</a></td>
@@ -84,8 +79,6 @@
                     </tr>
                 </table>
             </td>
-        </tr>
-        <tr>
             <td>
                 <table>
                     <th><a href="{{ url_for('add_component_comment', id=component.id) }}">Comments:</a></th>
@@ -96,6 +89,21 @@
                         <td>{{ comment.text }}</td>
                         <td>{{ moment(comment.timestamp).format('DD/MM/YYYY HH:MM') }}</td>
                         <td><a href="{{ url_for('remove_component_comment', id=component.id, comment_id=comment.id) }}">Remove</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <table>
+                    <h3>Supplier shipments</h3>
+                    <th>Supplier PO</th>
+                    <th>Customer PO</th>
+                    <th>MAD Date</th>
+                    <th>Total QTY</th>
+                    {% for shipment in supplier_shipments %}
+                    <tr>
+                        <td>{{ shipment.supplier_po }}</td>
+                        <td>{{ shipment.customer_po }}</td>
+                        <td>{{ shipment.mad_date }}</td>
+                        <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
                     </tr>
                     {% endfor %}
                 </table>
