@@ -17,7 +17,6 @@ class Component(db.Model):
     on_shortage = db.Column(db.Boolean, default=False)
     incoming_shipments_qty = db.Column(db.Integer, default=0)
     free_to_order_qty = db.Column(db.Integer, default=0)
-    open_po_qty = db.Column(db.Integer, default=0)
     unit_price = db.Column(db.Float, default=0.0)
     comments = db.relationship("ComponentComment", backref="component", lazy=True)
     supplier_shipment = db.relationship(
@@ -50,3 +49,12 @@ class SupplierStock(db.Model):
     component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
     supplier_stock_qty = db.Column(db.Integer, default=0)
     stock_date = db.Column(db.Date, default=None)
+
+
+class OpenPo(db.Model):
+    __tablename__ = "open_po"
+    id = db.Column(db.Integer, primary_key=True)
+    component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
+    customer_po = db.Column(db.Integer, default=None)
+    po_qty = db.Column(db.Integer, default=0)
+    document_date = db.Column(db.Date, default=None)

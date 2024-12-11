@@ -16,6 +16,7 @@ from app.models import (
     ComponentComment,
     SupplierShipment,
     SupplierStock,
+    OpenPo,
 )
 from app.forms import (
     AddComponent,
@@ -50,12 +51,6 @@ def all_components():
                 Component.incoming_shipments_qty > 0
             ).order_by(Component.id.asc()),
             "title": "Incoming shipments",
-        },
-        "open_po": {
-            "query": Component.query.filter(Component.open_po_qty > 0).order_by(
-                Component.id.asc()
-            ),
-            "title": "Open PO",
         },
     }
 
@@ -116,6 +111,58 @@ def prepare_supplier_stock_data(stock_file):
         "Calendar Day",
         "Customer Part #",
         "Qty on Hand",
+    ]
+    ready_data = data[ready_list]
+    ready_data.reset_index(drop=True, inplace=True)
+    return ready_data
+
+
+@app.route("/open_po", methods=["GET", "POST"])
+def open_po():
+    all_open_po = OpenPo.query.order_by(OpenPo.component_id.desc())
+    components = [Component.query.get(stock.component_id) for stock in all_open_po]
+    ready_open_po = zip(components, all_open_po)
+    return render_template(
+        "open_po.html",
+        title="Open PO",
+        ready_open_po=ready_open_po,
+    )
+
+
+@app.route("/open_po/update_open_po", methods=["GET", "POST"])
+def update_open_po():
+    OpenPo.query.delete()
+    db.session.commit()
+    file = request.files["file"]
+    file.save(file.filename)
+    all_open_po = prepare_open_po_data(open_po_file=file)
+    for index, row in all_open_po.iterrows():
+        try:
+            component = (
+                Component.query.filter_by(material_number=row["Material"]).first().id
+            )
+            new_open_po = OpenPo(
+                component_id=component,
+                customer_po=row["Purchasing Document"],
+                po_qty=row["Order Quantity"],
+                document_date=row["Document Date"],
+            )
+            db.session.add(new_open_po)
+            db.session.commit()
+        except AttributeError:
+            pass
+
+    os.remove(file.filename)
+    return redirect(request.referrer)
+
+
+def prepare_open_po_data(open_po_file):
+    data = pd.read_excel(open_po_file)
+    ready_list = [
+        "Purchasing Document",
+        "Material",
+        "Document Date",
+        "Order Quantity",
     ]
     ready_data = data[ready_list]
     ready_data.reset_index(drop=True, inplace=True)
@@ -351,8 +398,6 @@ def update_component_status(id):
     methods=["GET", "POST"],
 )
 def update_component_qty(id, qty_type, qty_name):
-    print(qty_type)
-    print(qty_name)
     form = UpdateComponentQty()
     component = Component.query.get(id)
     qty_current = getattr(component, qty_type)
