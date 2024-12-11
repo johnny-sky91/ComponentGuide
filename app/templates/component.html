@@ -71,7 +71,7 @@
                     </tr>
                     <tr>
                         <th>Supplier stock [QTY]</th>
-                        <td><a href="{{ url_for('update_component_qty', id=component.id, qty_type='supplier_stock_qty', qty_name='supplier stock') }}">{{ component.supplier_stock_qty }}</a></td>
+                        <td>{{ component_stock }}</td>
                     </tr>
                     <tr>
                         <th>Open PO [QTY]</th>
@@ -80,18 +80,6 @@
                 </table>
             </td>
             <td>
-                <table>
-                    <th><a href="{{ url_for('add_component_comment', id=component.id) }}">Comments:</a></th>
-                    <th>Timestamp</th>
-                    <th>Action</th>
-                    {% for comment in comments %}
-                    <tr>
-                        <td>{{ comment.text }}</td>
-                        <td>{{ moment(comment.timestamp).format('DD/MM/YYYY HH:MM') }}</td>
-                        <td><a href="{{ url_for('remove_component_comment', id=component.id, comment_id=comment.id) }}">Remove</a></td>
-                    </tr>
-                    {% endfor %}
-                </table>
                 <table>
                     <h3>Supplier shipments</h3>
                     <th>Supplier PO</th>
@@ -104,6 +92,18 @@
                         <td>{{ shipment.customer_po }}</td>
                         <td>{{ shipment.mad_date }}</td>
                         <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <table>
+                    <th><a href="{{ url_for('add_component_comment', id=component.id) }}">Comments:</a></th>
+                    <th>Timestamp</th>
+                    <th>Action</th>
+                    {% for comment in comments %}
+                    <tr>
+                        <td>{{ comment.text }}</td>
+                        <td>{{ moment(comment.timestamp).format('DD/MM/YYYY HH:MM') }}</td>
+                        <td><a href="{{ url_for('remove_component_comment', id=component.id, comment_id=comment.id) }}">Remove</a></td>
                     </tr>
                     {% endfor %}
                 </table>

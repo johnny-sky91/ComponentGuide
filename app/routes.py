@@ -211,8 +211,11 @@ def component_view(id):
         .order_by(SupplierShipment.mad_date.desc())
         .all()
     )
-    print(supplier_shipments)
-
+    component_stock = SupplierStock.query.filter_by(component_id=id).first()
+    if component_stock is None:
+        component_stock = 0
+    else:
+        component_stock = component_stock.supplier_stock_qty
     comments = (
         ComponentComment.query.filter_by(component_id=id)
         .order_by(ComponentComment.id.desc())
@@ -224,6 +227,7 @@ def component_view(id):
         component=component,
         comments=comments,
         supplier_shipments=supplier_shipments,
+        component_stock=component_stock,
     )
 
 
