@@ -18,8 +18,8 @@
             <td>
                 <table>
                     <tr>
-                        <th style="width: 30%">ID</th>
-                        <td>{{ component.id }}</td>
+                        <th style="width: 20%">ID</th>
+                        <td style="width: 80%">{{ component.id }}</td>
                     </tr>
                     <tr>
                         <th>Material number</th>
@@ -73,15 +73,27 @@
                         <th>Supplier stock [QTY]</th>
                         <td>{{ component_stock }}</td>
                     </tr>
-                    <tr>
-                        <th>Open PO [QTY]</th>
-                        <td>open po</td>
-                    </tr>
                 </table>
             </td>
             <td>
+                <table id="PoTable" style="display: table;">
+                    <h3>
+                        Open PO - Total: {{ open_po | sum(attribute='po_qty')}} pcs - 
+                        <span id="PoTableText" class="toggle-text" onclick="toggleTable('PoTable', 'PoTableText')">Hide the table</span>
+                    </h3>
+                    <th>Customer PO</th>
+                    <th>Document date</th>
+                    <th>PO QTY</th>
+                    {% for one_po in open_po %}
+                    <tr>
+                        <td>{{ one_po.customer_po }}</td>
+                        <td>{{ one_po.document_date }}</td>
+                        <td>{{ one_po.po_qty }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
                 <table>
-                    <h3>Supplier shipments</h3>
+                    <h3>Supplier shipments - Total: {{ supplier_shipments | sum(attribute='asn_qty') + supplier_shipments | sum(attribute='ssd_qty') }} pcs</h3>
                     <th>Supplier PO</th>
                     <th>Customer PO</th>
                     <th>MAD Date</th>
