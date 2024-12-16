@@ -4,6 +4,8 @@
         <title>ComponentGuide - {{ title }}</title>
         <link rel="icon" type="image/ico" href="{{ url_for('static', filename='favicon.ico') }}">
         <link rel="stylesheet" type="text/css" href="/static/styles.css">
+        <script src="{{url_for('static', filename='scripts.js')}}"></script>
+
         {{ moment.include_moment() }}
     </head>
     <body>
