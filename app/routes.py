@@ -238,6 +238,13 @@ def incoming_shipments():
     )
 
 
+@app.route("/incoming_shipments/clear_incoming_shipments", methods=["GET", "POST"])
+def clear_incoming_shipments():
+    IncomingShipment.query.delete()
+    db.session.commit()
+    return redirect(request.referrer)
+
+
 @app.route("/incoming_shipments/update_incoming_shipments", methods=["GET", "POST"])
 def update_incoming_shipments():
     IncomingShipment.query.delete()
@@ -457,7 +464,7 @@ def update_component_qty(id, qty_type, qty_name):
         setattr(component, qty_type, form.new_qty.data)
         db.session.commit()
         flash(f"QTY updated!")
-        return redirect(url_for("component_view", id=id))
+        return redirect(request.referrer)
     return render_template(
         f"update/update_qty.html",
         title=f"{component.material_number}",
@@ -466,6 +473,27 @@ def update_component_qty(id, qty_type, qty_name):
         qty_current=qty_current,
         qty_name=qty_name,
     )
+
+
+@app.route("/all_components/next_component_qty/<step>/<int:id>", methods=["GET"])
+def next_component_qty(step, id):
+    if step.lower() == "forward":
+        new_id = id + 1
+    else:
+        new_id = id - 1
+    next_group = Component.query.get(new_id)
+    if next_group:
+        return redirect(
+            url_for(
+                "update_component_qty",
+                id=new_id,
+                qty_type="free_to_order_qty",
+                qty_name="free to order",
+            )
+        )
+    else:
+        flash("No more components")
+        return redirect(request.referrer)
 
 
 @app.route(
