@@ -1,126 +1,160 @@
 {% extends "base.html" %}
 {% block content %}
-<tbody>
-    <style>
-        .column {
-            flex: 12;
-            margin: 0 5px;
-        }
-        table {
-            font-size: 12px;
-            width: 100%;
-        }
-    </style>
+<style>
+body {
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+}
+
+.column_1 {
+    width: 600px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px;
+    text-align: left;
+}
+.column_2 {
+    width: 500px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px;
+    text-align: left;
+}
+.column_3 {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px;
+    text-align: left;
+}
+h3 {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+</style>
+<body>
     <a href="{{ url_for('next_component', step='back', id=component.id) }}">Previous</a>
     <a href="{{ url_for('next_component', step='forward', id=component.id) }}">Next</a>
-    <table>
-        <tr>
-            <td>
-                <table>
-                    <tr>
-                        <th style="width: 20%">ID</th>
-                        <td style="width: 80%">{{ component.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Material number</th>
-                        <td>{{ component.material_number }}</td>
-                    </tr>
-                    <tr>
-                        <th>Material description</th>
-                        <td>{{ component.material_description }}</td>
-                    </tr>
-                    <tr>
-                        <th>Supplier material number</th>
-                        <td>{{ component.supplier_material_number }}</td>
-                    </tr>
-                    <tr>
-                        <th>Manufacturer part</th>
-                        <td>{{ component.manufacturer_part }}</td>
-                    </tr>
-                    <tr>
-                        <th style="width: 30%">Leadtime [weeks]</th>
-                        <td><a href="{{ url_for('update_component_leadtime', id=component.id) }}">{{ component.leadtime }}</a></td>
-                    </tr>
-                    <tr>
-                        <th>Status</th>
-                        <td><a href="{{ url_for('update_component_status', id=component.id) }}">{{ component.status }}</a></td>
-                    </tr>
-                    <tr>
-                        <th>Note</th>
-                        <td><a href="{{ url_for('update_component_note', id=component.id) }}">{{ component.note }}</a></td>
-                    </tr>
-                    <tr>
-                        <th>Unit price [$]</th>
-                        <td><a href="{{ url_for('update_component_unit_price', id=component.id) }}">{{ component.unit_price }}</a></td>
-                    </tr>
-                    <tr>
-                        <th>Check</th>
-                        <td><a href="{{ url_for('change_check', id=component.id) }}">{{ component.check }}</a></td>
-                    </tr>
-                    <tr>
-                        <th>On shortage</th>
-                        <td><a href="{{ url_for('change_shortage', id=component.id) }}">{{ component.on_shortage }}</a></td>
-                    </tr>
-                    <tr>
-                        <th>Free to order [QTY]</th>
-                        <td><a href="{{ url_for('update_component_qty', id=component.id, qty_type='free_to_order_qty', qty_name='free to order') }}">{{ component.free_to_order_qty }}</a></td>
-                    </tr>
-                    <tr>
-                        <th>Incoming shipments [QTY]</th>
-                        <td>{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
-                    </tr>
-                    <tr>
-                        <th>Supplier stock [QTY]</th>
-                        <td>{{ component_stock }}</td>
-                    </tr>
-                </table>
-            </td>
-            <td>
-                <table id="PoTable" style="display: table;">
-                    <h3>
-                        Open PO - Total: {{ open_po | sum(attribute='po_qty')}} pcs - 
-                        <span id="PoTableText" class="toggle-text" onclick="toggleTable('PoTable', 'PoTableText')">Hide the table</span>
-                    </h3>
-                    <th>Customer PO</th>
-                    <th>Document date</th>
-                    <th>PO QTY</th>
-                    {% for one_po in open_po %}
-                    <tr>
-                        <td>{{ one_po.customer_po }}</td>
-                        <td>{{ one_po.document_date }}</td>
-                        <td>{{ one_po.po_qty }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-                <table>
-                    <h3>Supplier shipments - Total: {{ supplier_shipments | sum(attribute='asn_qty') + supplier_shipments | sum(attribute='ssd_qty') }} pcs</h3>
+    <div class="container">
+        <div class="column_1">
+            <h3>Basic info</h3>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <td>{{ component.id }}</td>
+                </tr>
+                <tr>
+                    <th>Material number</th>
+                    <td>{{ component.material_number }}</td>
+                </tr>
+                <tr>
+                    <th>Material description</th>
+                    <td>{{ component.material_description }}</td>
+                </tr>
+                <tr>
+                    <th>Supplier material number</th>
+                    <td>{{ component.supplier_material_number }}</td>
+                </tr>
+                <tr>
+                    <th>Manufacturer part</th>
+                    <td>{{ component.manufacturer_part }}</td>
+                </tr>
+                <tr>
+                    <th><a href="{{ url_for('update_component_leadtime', id=component.id) }}">Leadtime [weeks]</a></th>
+                    <td>{{ component.leadtime }}</td>
+                </tr>
+                </tr>
+                    <th><a href="{{ url_for('update_component_unit_price', id=component.id) }}">Unit price [$]</a></th>
+                    <td>{{ component.unit_price }}</td>
+                </tr>
+                    <th><a href="{{ url_for('update_component_status', id=component.id) }}">Status</a></th>
+                    <td>{{ component.status }}</td>
+                </tr>
+                </tr>
+                    <th><a href="{{ url_for('update_component_note', id=component.id) }}">Note</a></th>
+                    <td>{{ component.note }}</td>
+                </tr>
+                </tr>
+                    <th><a href="{{ url_for('change_check', id=component.id) }}">Check</a></th>
+                    <td>{{ component.check }}</td>
+                </tr>
+                </tr>
+                    <th><a href="{{ url_for('change_shortage', id=component.id) }}">On shortage</a></th>
+                    <td>{{ component.on_shortage }}</td>
+                </tr>
+
+            </table>
+            <h3><a href="{{ url_for('add_component_comment', id=component.id) }}">Comments</a></h3>     
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Text</th>
+                    <th>Action</th>
+                </tr>
+                {% for comment in comments %}
+                <tr>
+                    <td>{{ comment.timestamp }}</td>
+                    <td>{{ comment.text }}</td>
+                    <td><a href="{{ url_for('remove_component_comment', comment_id=comment.id, id=comment.component_id) }}">Remove</a></td>
+                </tr>
+                {% endfor %}
+            </table> 
+        </div>
+        <div class="column_2">
+            <h3> Quantities</h3>
+            <table>
+            </tr>
+            <th><a href="{{ url_for('update_component_qty', id=component.id, qty_type='free_to_order_qty', qty_name='free to order') }}">Free to order</a></th>
+                <td>{{ component.free_to_order_qty }}</td>
+            </tr>
+            </tr>
+                <th>Incoming shipments</th>
+                <td>{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
+            </tr>
+            </tr>
+                <th>Supplier stock</th>
+                <td>{{ component_stock }}</td>
+            </tr>
+            </table>
+            <h3>Supplier shipments - total: {{ supplier_shipments | sum(attribute='asn_qty') + supplier_shipments | sum(attribute='ssd_qty') }}</h3>
+            <table>
+                <tr>
                     <th>Supplier PO</th>
                     <th>Customer PO</th>
-                    <th>MAD Date</th>
+                    <th>MAD date</th>
                     <th>Total QTY</th>
-                    {% for shipment in supplier_shipments %}
-                    <tr>
-                        <td>{{ shipment.supplier_po }}</td>
-                        <td>{{ shipment.customer_po }}</td>
-                        <td>{{ shipment.mad_date }}</td>
-                        <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-                <table>
-                    <th><a href="{{ url_for('add_component_comment', id=component.id) }}">Comments:</a></th>
-                    <th>Timestamp</th>
-                    <th>Action</th>
-                    {% for comment in comments %}
-                    <tr>
-                        <td>{{ comment.text }}</td>
-                        <td>{{ moment(comment.timestamp).format('DD/MM/YYYY HH:MM') }}</td>
-                        <td><a href="{{ url_for('remove_component_comment', id=component.id, comment_id=comment.id) }}">Remove</a></td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </td>
-        </tr>
-    </table>
-</tbody>
+                </tr>
+                {% for shipment in supplier_shipments %}
+                <tr>
+                    <td>{{ shipment.supplier_po }}</td>
+                    <td>{{ shipment.customer_po }}</td>
+                    <td>{{ shipment.mad_date }}</td>
+                    <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
+                </tr>
+                {% endfor %}
+            </table> 
+        </div>
+        <div class="column_3">
+            <h3>Open PO - total: {{ open_po | sum(attribute='po_qty')}} pcs</h3>
+            <table>
+                <tr>
+                    <th>Customer PO</th>
+                    <th>PO QTY</th>
+                    <th>Document date</th>
+                </tr>
+                {% for one_po in open_po %}
+                <tr>
+                    <td>{{ one_po.customer_po }}</td>
+                    <td>{{ one_po.po_qty }}</td>
+                    <td>{{ one_po.document_date }}</td>
+                </tr>
+                {% endfor %}
+            </table>    
+            
+        </div>
+    </div>
+</body>
 {% endblock %}
