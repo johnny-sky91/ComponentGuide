@@ -67,7 +67,7 @@
                     </tr>
                     <tr>
                         <th>Incoming shipments [QTY]</th>
-                        <td><a href="{{ url_for('update_component_qty', id=component.id, qty_type='incoming_shipments_qty', qty_name='incoming shipments') }}">{{ component.incoming_shipments_qty }}</a></td>
+                        <td>{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
                     </tr>
                     <tr>
                         <th>Supplier stock [QTY]</th>

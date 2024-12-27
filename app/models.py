@@ -15,7 +15,6 @@ class Component(db.Model):
     note = db.Column(db.String(160), default=None)
     check = db.Column(db.Boolean, default=False)
     on_shortage = db.Column(db.Boolean, default=False)
-    incoming_shipments_qty = db.Column(db.Integer, default=0)
     free_to_order_qty = db.Column(db.Integer, default=0)
     unit_price = db.Column(db.Float, default=0.0)
     comments = db.relationship("ComponentComment", backref="component", lazy=True)
@@ -58,3 +57,11 @@ class OpenPo(db.Model):
     customer_po = db.Column(db.Integer, default=None)
     po_qty = db.Column(db.Integer, default=0)
     document_date = db.Column(db.Date, default=None)
+
+
+class IncomingShipment(db.Model):
+    __tablename__ = "incoming_shipments"
+    id = db.Column(db.Integer, primary_key=True)
+    component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
+    customer_po = db.Column(db.Integer, default=None)
+    incoming_shipments_qty = db.Column(db.Integer, default=0)

@@ -17,6 +17,7 @@ from app.models import (
     SupplierShipment,
     SupplierStock,
     OpenPo,
+    IncomingShipment,
 )
 from app.forms import (
     AddComponent,
@@ -45,12 +46,6 @@ def all_components():
         "all": {
             "query": Component.query.order_by(Component.id.asc()),
             "title": "All components",
-        },
-        "incoming_shipments": {
-            "query": Component.query.filter(
-                Component.incoming_shipments_qty > 0
-            ).order_by(Component.id.asc()),
-            "title": "Incoming shipments",
         },
     }
 
@@ -231,6 +226,58 @@ def prepare_supplier_shipments_data(shipment_file):
     return ready_data
 
 
+@app.route("/incoming_shipments", methods=["GET", "POST"])
+def incoming_shipments():
+    shipments = IncomingShipment.query.order_by(IncomingShipment.component_id.desc())
+    components = [Component.query.get(shipment.component_id) for shipment in shipments]
+    all_shipments_info = zip(components, shipments)
+    return render_template(
+        "incoming_shipments.html",
+        title="Incoming shipments",
+        all_shipments_info=all_shipments_info,
+    )
+
+
+@app.route("/incoming_shipments/update_incoming_shipments", methods=["GET", "POST"])
+def update_incoming_shipments():
+    IncomingShipment.query.delete()
+    db.session.commit()
+    file = request.files["file"]
+    file.save(file.filename)
+    incoming_shipments = prepare_incoming_shipments_data(shipment_file=file)
+    for index, row in incoming_shipments.iterrows():
+        try:
+            component = (
+                Component.query.filter_by(material_number=int(row["Customer Part #"]))
+                .first()
+                .id
+            )
+            new_shipment = IncomingShipment(
+                component_id=component,
+                incoming_shipments_qty=int(row["Ship out QTY"]),
+                customer_po=int(row["FTS order"]),
+            )
+            db.session.add(new_shipment)
+            db.session.commit()
+        except AttributeError:
+            pass
+
+    os.remove(file.filename)
+    return redirect(request.referrer)
+
+
+def prepare_incoming_shipments_data(shipment_file):
+    data = pd.read_excel(shipment_file)
+    ready_list = [
+        "Customer Part #",
+        "Ship out QTY",
+        "FTS order",
+    ]
+    ready_data = data[ready_list]
+    ready_data.reset_index(drop=True, inplace=True)
+    return ready_data
+
+
 @app.route("/all_components/add_new_component", methods=["GET", "POST"])
 def add_new_component():
     form = AddComponent()
@@ -258,6 +305,7 @@ def component_view(id):
         .order_by(SupplierShipment.mad_date.desc())
         .all()
     )
+    incoming_shipments = IncomingShipment.query.filter_by(component_id=id).all()
     component_stock = SupplierStock.query.filter_by(component_id=id).first()
     if component_stock is None:
         component_stock = 0
@@ -278,6 +326,7 @@ def component_view(id):
         supplier_shipments=supplier_shipments,
         component_stock=component_stock,
         open_po=open_po,
+        incoming_shipments=incoming_shipments,
     )
 
 
