@@ -21,6 +21,11 @@ class Component(db.Model):
     supplier_shipment = db.relationship(
         "SupplierShipment", backref="component", lazy=True
     )
+    supplier_stock = db.relationship("SupplierStock", backref="component", lazy=True)
+    open_po = db.relationship("OpenPo", backref="component", lazy=True)
+    incoming_shipment = db.relationship(
+        "IncomingShipment", backref="component", lazy=True
+    )
 
 
 class ComponentComment(db.Model):
