@@ -45,47 +45,39 @@ h3 {
                 <tr>
                     <th>ID</th>
                     <td>{{ component.id }}</td>
+                    <th><a href="{{ url_for('update_component_status', id=component.id) }}">Status</a></th>
+                    <td>{{ component.status }}</td>
                 </tr>
                 <tr>
                     <th>Material number</th>
-                    <td>{{ component.material_number }}</td>
+                    <td colspan = "3"><button onClick="copyStringToClipboard('{{ component.material_number }}')">{{ component.material_number }}</button></td>
                 </tr>
                 <tr>
                     <th>Material description</th>
-                    <td>{{ component.material_description }}</td>
-                </tr>
-                <tr>
-                    <th>Supplier material number</th>
-                    <td>{{ component.supplier_material_number }}</td>
+                    <td colspan = "3">{{ component.material_description }}</td>
                 </tr>
                 <tr>
                     <th>Manufacturer part</th>
                     <td>{{ component.manufacturer_part }}</td>
+                    <th>Supplier material number</th>
+                    <td>{{ component.supplier_material_number }}</td>
                 </tr>
                 <tr>
                     <th><a href="{{ url_for('update_component_leadtime', id=component.id) }}">Leadtime [weeks]</a></th>
                     <td>{{ component.leadtime }}</td>
-                </tr>
-                </tr>
                     <th><a href="{{ url_for('update_component_unit_price', id=component.id) }}">Unit price [$]</a></th>
                     <td>{{ component.unit_price }}</td>
                 </tr>
-                    <th><a href="{{ url_for('update_component_status', id=component.id) }}">Status</a></th>
-                    <td>{{ component.status }}</td>
-                </tr>
                 </tr>
                     <th><a href="{{ url_for('update_component_note', id=component.id) }}">Note</a></th>
-                    <td>{{ component.note }}</td>
+                    <td colspan = "3">{{ component.note }}</td>
                 </tr>
                 </tr>
                     <th><a href="{{ url_for('change_check', id=component.id) }}">Check</a></th>
                     <td>{{ component.check }}</td>
-                </tr>
-                </tr>
                     <th><a href="{{ url_for('change_shortage', id=component.id) }}">On shortage</a></th>
                     <td>{{ component.on_shortage }}</td>
                 </tr>
-
             </table>
             <h3><a href="{{ url_for('add_component_comment', id=component.id) }}">Comments</a></h3>     
             <table>
@@ -107,19 +99,26 @@ h3 {
             <h3> Quantities</h3>
             <table>
             </tr>
-            <th><a href="{{ url_for('update_component_qty', id=component.id, qty_type='free_to_order_qty', qty_name='free to order') }}">Free to order</a></th>
+            <th>Free to order</th>
                 <td>{{ component.free_to_order_qty }}</td>
+                <td>
+                    <form action="" method="post">
+                        {{ form.hidden_tag() }}
+                        {{ form.new_qty(style='height: 14px; width:50px') }}
+                        {{ form.submit() }}
+                    </form>
+                </td>
             </tr>
             </tr>
                 <th>Incoming shipments</th>
-                <td>{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
+                <td colspan="2">{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
             </tr>
             </tr>
                 <th>Supplier stock</th>
-                <td>{{ component_stock }}</td>
+                <td colspan="2">{{ component_stock }}</td>
             </tr>
             </table>
-            <h3>Supplier shipments - total: {{ supplier_shipments | sum(attribute='asn_qty') + supplier_shipments | sum(attribute='ssd_qty') }}</h3>
+            <h3>Supplier shipments - total: {{ supplier_shipments | sum(attribute='asn_qty') + supplier_shipments | sum(attribute='ssd_qty') }} pcs</h3>
             <table>
                 <tr>
                     <th>Supplier PO</th>

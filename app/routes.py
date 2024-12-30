@@ -307,12 +307,19 @@ def component_view(id):
     else:
         component_stock = component_stock.supplier_stock_qty
     open_po = OpenPo.query.filter_by(component_id=id).all()
-
     comments = (
         ComponentComment.query.filter_by(component_id=id)
         .order_by(ComponentComment.id.desc())
         .all()
     )
+
+    form = UpdateComponentQty()
+    if form.validate_on_submit():
+        component.free_to_order_qty = form.new_qty.data
+        db.session.commit()
+        flash(f"QTY updated!")
+        return redirect(request.referrer)
+
     return render_template(
         "component.html",
         title=f"{component.material_number}",
@@ -322,6 +329,7 @@ def component_view(id):
         component_stock=component_stock,
         open_po=open_po,
         incoming_shipments=incoming_shipments,
+        form=form,
     )
 
 
@@ -437,29 +445,6 @@ def update_component_status(id):
         title=f"{component.material_number}",
         form=form,
         component=component,
-    )
-
-
-@app.route(
-    "/all_components/component_view/<int:id>/update_qty/<qty_type>/<qty_name>",
-    methods=["GET", "POST"],
-)
-def update_component_qty(id, qty_type, qty_name):
-    form = UpdateComponentQty()
-    component = Component.query.get(id)
-    qty_current = getattr(component, qty_type)
-    if form.validate_on_submit():
-        setattr(component, qty_type, form.new_qty.data)
-        db.session.commit()
-        flash(f"QTY updated!")
-        return redirect(request.referrer)
-    return render_template(
-        f"update/update_qty.html",
-        title=f"{component.material_number}",
-        form=form,
-        component=component,
-        qty_current=qty_current,
-        qty_name=qty_name,
     )
 
 
