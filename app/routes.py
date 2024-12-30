@@ -40,22 +40,10 @@ def inject_date_cw():
 @app.route("/")
 @app.route("/all_components", methods=["GET", "POST"])
 def all_components():
-    filter_type = request.args.get("filter", "all")
-
-    filters = {
-        "all": {
-            "query": Component.query.order_by(Component.id.asc()),
-            "title": "All components",
-        },
-    }
-
-    selected_filter = filters.get(filter_type, filters["all"])
-    components = selected_filter["query"].all()
-    title = selected_filter["title"]
-
+    components = Component.query.order_by(Component.id.asc()).all()
     return render_template(
         "all_components.html",
-        title=title,
+        title="All components",
         components=components,
     )
 
