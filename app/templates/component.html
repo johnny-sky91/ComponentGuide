@@ -110,15 +110,15 @@ h3 {
                 </td>
             </tr>
             </tr>
-                <th>Incoming shipments</th>
+                <th><a href="/incoming_shipments">Incoming shipments</a></th>
                 <td colspan="2">{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
             </tr>
             </tr>
-                <th>Supplier stock</th>
+                <th><a href="/supplier_stock">Supplier stock</a></th>
                 <td colspan="2">{{ component_stock }}</td>
             </tr>
             </table>
-            <h3>Supplier shipments - total: {{ supplier_shipments | sum(attribute='asn_qty') + supplier_shipments | sum(attribute='ssd_qty') }} pcs</h3>
+            <h3><a href="/supplier_shipments">Supplier shipments</a> - total: {{ supplier_shipments | sum(attribute='asn_qty') + supplier_shipments | sum(attribute='ssd_qty') }} pcs</h3>
             <table>
                 <tr>
                     <th>Supplier PO</th>
@@ -137,7 +137,7 @@ h3 {
             </table> 
         </div>
         <div class="column_3">
-            <h3>Open PO - total: {{ open_po | sum(attribute='po_qty')}} pcs</h3>
+            <h3><a href="/open_po">Open PO</a> - total: {{ open_po | sum(attribute='po_qty')}} pcs</h3>
             <table>
                 <tr>
                     <th>Customer PO</th>
