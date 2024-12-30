@@ -1,13 +1,12 @@
-function copyListToClipboard(list) {
+function copyStringToClipboard(string) {
     const textarea = document.createElement('textarea');
-    const textToCopy = JSON.parse(list).join('\n')
-    console.log(textToCopy)
-    textarea.value = textToCopy;
+    textarea.value = string;
     document.body.appendChild(textarea);
     textarea.select();
     document.execCommand('copy');
     document.body.removeChild(textarea);
-  }
+    console.log('Text copied to clipboard');
+}
 
   function toggleTable(tableId, textId) {
     var table = document.getElementById(tableId);
