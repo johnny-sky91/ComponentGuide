@@ -1,7 +1,5 @@
 from app import db
 
-from datetime import datetime
-
 
 class Component(db.Model):
     __tablename__ = "component"
@@ -26,6 +24,7 @@ class Component(db.Model):
     incoming_shipment = db.relationship(
         "IncomingShipment", backref="component", lazy=True
     )
+    project = db.relationship("Project", backref="component", lazy=True)
 
 
 class ComponentComment(db.Model):
@@ -70,3 +69,18 @@ class IncomingShipment(db.Model):
     component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
     customer_po = db.Column(db.Integer, default=None)
     incoming_shipments_qty = db.Column(db.Integer, default=0)
+
+
+class Project(db.Model):
+    __tablename__ = "project"
+    id = db.Column(db.Integer, primary_key=True)
+    component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
+    customer = db.Column(db.String(64))
+    project_date = db.Column(db.Date)
+    project_material_number = db.Column(db.Integer)
+    project_qty = db.Column(db.Integer, default=0)
+    component_availability = db.Column(db.String(64), default=None)
+    component_comment = db.Column(db.String(64), default=None)
+    ddo_status = db.Column(db.String(64), default=None)
+    ddo_end_date = db.Column(db.Date)
+    project_status = db.Column(db.String(64), default=None)

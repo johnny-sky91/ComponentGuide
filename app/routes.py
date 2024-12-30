@@ -18,6 +18,7 @@ from app.models import (
     SupplierStock,
     OpenPo,
     IncomingShipment,
+    Project,
 )
 from app.forms import (
     AddComponent,
@@ -207,6 +208,75 @@ def prepare_supplier_shipments_data(shipment_file):
         "MAD Date",
         "SSD Qty",
         "ASN Qty",
+    ]
+    ready_data = data[ready_list]
+    ready_data.reset_index(drop=True, inplace=True)
+
+    return ready_data
+
+
+@app.route("/open_projects", methods=["GET", "POST"])
+def open_projects():
+    projects = Project.query.order_by(Project.id.desc())
+    components = [Component.query.get(project.component_id) for project in projects]
+    all_projects_info = zip(components, projects)
+    return render_template(
+        "projects.html",
+        title="Open projects",
+        all_projects_info=all_projects_info,
+    )
+
+
+@app.route("/open_projects/update_open_projects", methods=["GET", "POST"])
+def update_open_projects():
+    Project.query.delete()
+    db.session.commit()
+    file = request.files["file"]
+    file.save(file.filename)
+    open_projects = prepare_open_projects_data(project_file=file)
+    for index, row in open_projects.iterrows():
+        new_ddo_end_date = row["DDO end date"]
+        if pd.isnull(new_ddo_end_date):
+            new_ddo_end_date = None
+        else:
+            pass
+        try:
+            component = Component.query.filter_by(material_number=row["SAP"]).first().id
+            new_project = Project(
+                component_id=component,
+                project_material_number=row["SAP"],
+                customer=row["Customer"],
+                project_date=row["Month"],
+                project_qty=row["QTY"],
+                component_availability=row["Availability"],
+                component_comment=row["Comments / hints"],
+                ddo_status=row["DDO"],
+                ddo_end_date=new_ddo_end_date,
+                project_status=row["Overall rate"],
+            )
+            db.session.add(new_project)
+            db.session.commit()
+        except AttributeError:
+            pass
+
+    os.remove(file.filename)
+    return redirect(request.referrer)
+
+
+def prepare_open_projects_data(project_file):
+    data = pd.read_excel(project_file)
+    data.columns = data.iloc[4]
+    data = data.iloc[5:]
+    ready_list = [
+        "Overall rate",
+        "Customer",
+        "Month",
+        "SAP",
+        "QTY",
+        "Availability",
+        "DDO",
+        "DDO end date",
+        "Comments / hints",
     ]
     ready_data = data[ready_list]
     ready_data.reset_index(drop=True, inplace=True)

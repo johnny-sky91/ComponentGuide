@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+    <form action="{{ url_for('update_open_projects') }}" method="post" enctype="multipart/form-data">
+        <label for="open_projects">Select open projects file:</label>
+        <input type="file" name="file" accept=".xlsx, .xls" id="open_projects">
+        <input type="submit" value="Upload new data">
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Customer</th>
+                <th>Project date</th>
+                <th>Overall rate</th>
+                <th>Material number</th>
+                <th>Manufacturer part</th>
+                <th>Project QTY</th>
+                <th>Availability</th>
+                <th>Comment</th>
+                <th>DDO status</th>
+                <th>DDO date</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% for project in all_projects_info %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ project[1].customer }}</td>
+                    <td>{{ project[1].project_date }}</td>
+                    <td>{{ project[1].project_status }}</td>
+                    <td><a href="{{ url_for('component_view', id=project[0].id) }}">{{ project[0].material_number }}</td>
+                    <td>{{ project[0].manufacturer_part }}</td>
+                    <td>{{ project[1].project_qty }}</td>
+                    <td>{{ project[1].component_availability }}</td>
+                    <td>{{ project[1].component_comment }}</td>
+                    <td>{{ project[1].ddo_status }}</td>
+                    <td>{{ project[1].ddo_end_date }}</td>
+                </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock %}
