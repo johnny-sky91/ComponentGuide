@@ -30,6 +30,13 @@ body {
     margin: 5px;
     text-align: left;
 }
+.column_4 {
+    width: 1200px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px;
+    text-align: left;
+}
 h3 {
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
@@ -152,7 +159,33 @@ h3 {
                 </tr>
                 {% endfor %}
             </table>    
-            
+        </div>
+    </div>
+    <div>
+        <div class="column_4">
+            <h3><a href="/open_projects">Projects</a> - total: {{ component.project | sum(attribute='project_qty')}} pcs</h3>
+            <table>
+                <tr>
+                    <th>Customer</th>
+                    <th>Project date</th>
+                    <th>Overall rate</th>
+                    <th>Project QTY</th>
+                    <th>Availability</th>
+                    <th>DDO status</th>
+                    <th>DDO date</th>
+                </tr>
+                {% for project in component.project %}
+                <tr>
+                    <td>{{ project.customer }}</td>
+                    <td>{{ project.project_date }}</td>
+                    <td>{{ project.project_status }}</td>
+                    <td>{{ project.project_qty }}</td>
+                    <td>{{ project.component_availability }}</td>
+                    <td>{{ project.ddo_status }}</td>
+                    <td>{{ project.ddo_end_date }}</td>
+                </tr>
+                {% endfor %}
+            </table>    
         </div>
     </div>
 </body>

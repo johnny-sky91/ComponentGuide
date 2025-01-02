@@ -29,6 +29,12 @@ from app.forms import (
     UpdateComponentStatus,
     UpdateComponentQty,
 )
+from app.other_functions.data_preparation import (
+    prepare_open_po,
+    prepare_supplier_shipments,
+    prepare_open_projects,
+    prepare_supplier_stock,
+)
 
 
 @app.context_processor
@@ -67,7 +73,7 @@ def update_supplier_stock():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    supplier_stock = prepare_supplier_stock_data(stock_file=file)
+    supplier_stock = prepare_supplier_stock(stock_file=file)
     for index, row in supplier_stock.iterrows():
         try:
             component = (
@@ -89,18 +95,6 @@ def update_supplier_stock():
     return redirect(request.referrer)
 
 
-def prepare_supplier_stock_data(stock_file):
-    data = pd.read_excel(stock_file)
-    ready_list = [
-        "Calendar Day",
-        "Customer Part #",
-        "Qty on Hand",
-    ]
-    ready_data = data[ready_list]
-    ready_data.reset_index(drop=True, inplace=True)
-    return ready_data
-
-
 @app.route("/open_po", methods=["GET", "POST"])
 def open_po():
     all_open_po = OpenPo.query.order_by(OpenPo.component_id.desc())
@@ -119,7 +113,7 @@ def update_open_po():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    all_open_po = prepare_open_po_data(open_po_file=file)
+    all_open_po = prepare_open_po(open_po_file=file)
     for index, row in all_open_po.iterrows():
         try:
             component = (
@@ -140,22 +134,9 @@ def update_open_po():
     return redirect(request.referrer)
 
 
-def prepare_open_po_data(open_po_file):
-    data = pd.read_excel(open_po_file)
-    ready_list = [
-        "Purchasing Document",
-        "Material",
-        "Document Date",
-        "Order Quantity",
-    ]
-    ready_data = data[ready_list]
-    ready_data.reset_index(drop=True, inplace=True)
-    return ready_data
-
-
 @app.route("/supplier_shipments", methods=["GET", "POST"])
 def supplier_shipments():
-    shipments = SupplierShipment.query.order_by(SupplierShipment.component_id.desc())
+    shipments = SupplierShipment.query.all()
     components = [Component.query.get(shipment.component_id) for shipment in shipments]
     all_shipments_info = zip(components, shipments)
     return render_template(
@@ -171,7 +152,7 @@ def update_supplier_shipments():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    supplier_shipments = prepare_supplier_shipments_data(shipment_file=file)
+    supplier_shipments = prepare_supplier_shipments(shipment_file=file)
     for index, row in supplier_shipments.iterrows():
         try:
             component = (
@@ -196,25 +177,6 @@ def update_supplier_shipments():
     return redirect(request.referrer)
 
 
-def prepare_supplier_shipments_data(shipment_file):
-    data = pd.read_excel(shipment_file)
-    data.columns = data.iloc[0]
-    data = data.iloc[1:, :]
-    data = data[data["Confirmation Type"] == "SSD"]
-    ready_list = [
-        "Customer Part #",
-        "Customer PO #",
-        "TDS PO #",
-        "MAD Date",
-        "SSD Qty",
-        "ASN Qty",
-    ]
-    ready_data = data[ready_list]
-    ready_data.reset_index(drop=True, inplace=True)
-
-    return ready_data
-
-
 @app.route("/open_projects", methods=["GET", "POST"])
 def open_projects():
     projects = Project.query.order_by(Project.id.desc())
@@ -233,11 +195,14 @@ def update_open_projects():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    open_projects = prepare_open_projects_data(project_file=file)
+    open_projects = prepare_open_projects(project_file=file)
     for index, row in open_projects.iterrows():
         new_ddo_end_date = row["DDO end date"]
+        new_project_qty = row["QTY"]
         if pd.isnull(new_ddo_end_date):
             new_ddo_end_date = None
+        if pd.isna(new_project_qty):
+            new_project_qty = None
         else:
             pass
         try:
@@ -247,7 +212,7 @@ def update_open_projects():
                 project_material_number=row["SAP"],
                 customer=row["Customer"],
                 project_date=row["Month"],
-                project_qty=row["QTY"],
+                project_qty=new_project_qty,
                 component_availability=row["Availability"],
                 component_comment=row["Comments / hints"],
                 ddo_status=row["DDO"],
@@ -261,27 +226,6 @@ def update_open_projects():
 
     os.remove(file.filename)
     return redirect(request.referrer)
-
-
-def prepare_open_projects_data(project_file):
-    data = pd.read_excel(project_file)
-    data.columns = data.iloc[4]
-    data = data.iloc[5:]
-    ready_list = [
-        "Overall rate",
-        "Customer",
-        "Month",
-        "SAP",
-        "QTY",
-        "Availability",
-        "DDO",
-        "DDO end date",
-        "Comments / hints",
-    ]
-    ready_data = data[ready_list]
-    ready_data.reset_index(drop=True, inplace=True)
-
-    return ready_data
 
 
 @app.route("/incoming_shipments", methods=["GET", "POST"])
@@ -311,6 +255,11 @@ def update_incoming_shipments():
     file.save(file.filename)
     incoming_shipments = prepare_incoming_shipments_data(shipment_file=file)
     for index, row in incoming_shipments.iterrows():
+        new_customer_po = row["FTS order"]
+        if pd.isna(new_customer_po):
+            new_customer_po = None
+        else:
+            pass
         try:
             component = (
                 Component.query.filter_by(material_number=int(row["Customer Part #"]))
@@ -320,7 +269,7 @@ def update_incoming_shipments():
             new_shipment = IncomingShipment(
                 component_id=component,
                 incoming_shipments_qty=int(row["Ship out QTY"]),
-                customer_po=int(row["FTS order"]),
+                customer_po=new_customer_po,
             )
             db.session.add(new_shipment)
             db.session.commit()
@@ -365,11 +314,7 @@ def add_new_component():
 @app.route("/all_components/component_view/<int:id>", methods=["GET", "POST"])
 def component_view(id):
     component = Component.query.get(id)
-    supplier_shipments = (
-        SupplierShipment.query.filter_by(component_id=id)
-        .order_by(SupplierShipment.mad_date.desc())
-        .all()
-    )
+    supplier_shipments = SupplierShipment.query.filter_by(component_id=id).all()
     incoming_shipments = IncomingShipment.query.filter_by(component_id=id).all()
     component_stock = SupplierStock.query.filter_by(component_id=id).first()
     if component_stock is None:
