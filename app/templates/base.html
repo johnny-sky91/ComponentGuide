@@ -5,14 +5,13 @@
         <link rel="icon" type="image/ico" href="{{ url_for('static', filename='favicon.ico') }}">
         <link rel="stylesheet" type="text/css" href="/static/styles.css">
         <script src="{{url_for('static', filename='scripts.js')}}"></script>
-
         {{ moment.include_moment() }}
     </head>
     <body>
         <!-- menu -->
         <div class="menu">
             <div> 
-                <a href="/all_components">Components</a>
+                <a href="/all_components/all">Components</a>
                 <a href="/incoming_shipments">Incoming shipments</a>
                 <a href="/open_po">Open PO</a>
                 <a href="/supplier_stock">Supplier stock</a>

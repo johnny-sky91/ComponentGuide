@@ -44,10 +44,21 @@ def inject_date_cw():
     return dict(current_date=current_date, week_number=week_number)
 
 
-@app.route("/")
-@app.route("/all_components", methods=["GET", "POST"])
-def all_components():
-    components = Component.query.order_by(Component.id.asc()).all()
+@app.route("/all_components/<what_view>", methods=["GET", "POST"])
+def all_components(what_view):
+
+    query_mapping = {
+        "check_true": {"check": True},
+        "shortage_true": {"on_shortage": True},
+    }
+    components_query = Component.query
+
+    if what_view.lower() in query_mapping:
+        query_filters = query_mapping[what_view.lower()]
+        components_query = components_query.filter_by(**query_filters)
+
+    components = components_query.order_by(Component.id.asc()).all()
+
     return render_template(
         "all_components.html",
         title="All components",
