@@ -131,6 +131,7 @@ h3 {
                     <th>Supplier PO</th>
                     <th>Customer PO</th>
                     <th>MAD date</th>
+                    <th>MAD week</th>
                     <th>Total QTY</th>
                 </tr>
                 {% for shipment in supplier_shipments %}
@@ -138,6 +139,7 @@ h3 {
                     <td>{{ shipment.supplier_po }}</td>
                     <td>{{ shipment.customer_po }}</td>
                     <td>{{ shipment.mad_date }}</td>
+                    <td>{{ moment(shipment.mad_date).format('W') }}</td>
                     <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
                 </tr>
                 {% endfor %}
