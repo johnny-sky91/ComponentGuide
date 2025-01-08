@@ -72,10 +72,20 @@ def supplier_stock():
     components_stock = SupplierStock.query.order_by(SupplierStock.component_id.desc())
     components = [Component.query.get(stock.component_id) for stock in components_stock]
     supplier_all_stock = zip(components, components_stock)
+    total_value = round(
+        sum(
+            [
+                x[0].unit_price * x[1].supplier_stock_qty
+                for x in zip(components, components_stock)
+            ]
+        )
+    )
+    total_value = f"{total_value:,}"
     return render_template(
         "supplier_stock.html",
         title="Supplier stock",
         supplier_all_stock=supplier_all_stock,
+        total_value=total_value,
     )
 
 
