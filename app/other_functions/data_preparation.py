@@ -30,7 +30,7 @@ def prepare_supplier_shipments(shipment_file):
     data = pd.read_excel(shipment_file)
     data.columns = data.iloc[0]
     data = data.iloc[1:, :]
-    data = data[data["Confirmation Type"] == "SSD"]
+    data = data.dropna(subset=["MAD Date"])
     ready_list = [
         "Customer Part #",
         "Customer PO #",
@@ -59,6 +59,18 @@ def prepare_open_projects(project_file):
         "DDO",
         "DDO end date",
         "Comments / hints",
+    ]
+    ready_data = data[ready_list]
+    ready_data.reset_index(drop=True, inplace=True)
+    return ready_data
+
+
+def prepare_incoming_shipments(shipment_file):
+    data = pd.read_excel(shipment_file)
+    ready_list = [
+        "Customer Part #",
+        "Ship out QTY",
+        "FTS order",
     ]
     ready_data = data[ready_list]
     ready_data.reset_index(drop=True, inplace=True)

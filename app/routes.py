@@ -34,6 +34,7 @@ from app.other_functions.data_preparation import (
     prepare_supplier_shipments,
     prepare_open_projects,
     prepare_supplier_stock,
+    prepare_incoming_shipments,
 )
 
 
@@ -264,13 +265,13 @@ def update_incoming_shipments():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    incoming_shipments = prepare_incoming_shipments_data(shipment_file=file)
+    incoming_shipments = prepare_incoming_shipments(shipment_file=file)
     for index, row in incoming_shipments.iterrows():
         new_customer_po = row["FTS order"]
         if pd.isna(new_customer_po):
             new_customer_po = None
         else:
-            pass
+            new_customer_po = int(row["FTS order"])
         try:
             component = (
                 Component.query.filter_by(material_number=int(row["Customer Part #"]))
@@ -289,18 +290,6 @@ def update_incoming_shipments():
 
     os.remove(file.filename)
     return redirect(request.referrer)
-
-
-def prepare_incoming_shipments_data(shipment_file):
-    data = pd.read_excel(shipment_file)
-    ready_list = [
-        "Customer Part #",
-        "Ship out QTY",
-        "FTS order",
-    ]
-    ready_data = data[ready_list]
-    ready_data.reset_index(drop=True, inplace=True)
-    return ready_data
 
 
 @app.route("/all_components/add_new_component", methods=["GET", "POST"])
