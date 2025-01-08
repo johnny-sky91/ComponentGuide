@@ -245,10 +245,20 @@ def incoming_shipments():
     shipments = IncomingShipment.query.order_by(IncomingShipment.component_id.desc())
     components = [Component.query.get(shipment.component_id) for shipment in shipments]
     all_shipments_info = zip(components, shipments)
+    total_value = round(
+        sum(
+            [
+                x[0].unit_price * x[1].incoming_shipments_qty
+                for x in zip(components, shipments)
+            ]
+        )
+    )
+    total_value = f"{total_value:,}"
     return render_template(
         "incoming_shipments.html",
         title="Incoming shipments",
         all_shipments_info=all_shipments_info,
+        total_value=total_value,
     )
 
 
