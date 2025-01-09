@@ -13,7 +13,8 @@ class Component(db.Model):
     note = db.Column(db.String(160), default=None)
     check = db.Column(db.Boolean, default=False)
     on_shortage = db.Column(db.Boolean, default=False)
-    free_to_order_qty = db.Column(db.Integer, default=0)
+    stock = db.Column(db.Integer, default=0)
+    orders = db.Column(db.Integer, default=0)
     unit_price = db.Column(db.Float, default=0.0)
     comments = db.relationship("ComponentComment", backref="component", lazy=True)
     supplier_shipment = db.relationship(
