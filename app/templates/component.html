@@ -107,7 +107,7 @@ h3 {
             </tr>
             <th>Free to order</th>
                 <td>{{ component.free_to_order_qty }}</td>
-                <td>
+                <td colspan="4">
                     <form action="" method="post">
                         {{ form.hidden_tag() }}
                         {{ form.new_qty(style='height: 14px; width:50px') }}
@@ -117,29 +117,35 @@ h3 {
             </tr>
             </tr>
                 <th><a href="/incoming_shipments">Incoming shipments</a></th>
-                <td colspan="2">{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
+                <td colspan="4">{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
             </tr>
             </tr>
                 <th><a href="/supplier_stock">Supplier stock</a></th>
-                <td colspan="2">{{ component_stock }}</td>
+                <td colspan="2">{{ supplier_stock }}</td>
+                <th>Supplier stock left</th>
+                <td>{{ supplier_stock_left }}</td>
             </tr>
             </table>
             <h3><a href="/supplier_shipments">Supplier shipments</a> - total: {{ supplier_shipments | sum(attribute='asn_qty') + supplier_shipments | sum(attribute='ssd_qty') }} pcs</h3>
             <table>
                 <tr>
+                    <th>No</th>
                     <th>Supplier PO</th>
                     <th>Customer PO</th>
                     <th>MAD date</th>
-                    <th>MAD week</th>
-                    <th>Total QTY</th>
+                    <th>MAD<br>week</th>
+                    <th>Total<br>QTY</th>
+                    <th>Pcs left<br>QTY</th>
                 </tr>
                 {% for shipment in supplier_shipments %}
                 <tr>
+                    <td>{{ loop.index }}</td>
                     <td>{{ shipment.supplier_po }}</td>
                     <td>{{ shipment.customer_po }}</td>
                     <td>{{ shipment.mad_date }}</td>
                     <td>{{ moment(shipment.mad_date).format('W') }}</td>
                     <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
+                    <td>how many pcs left in this shipment</td>
                 </tr>
                 {% endfor %}
             </table> 
@@ -148,12 +154,14 @@ h3 {
             <h3><a href="/open_po">Open PO</a> - total: {{ open_po | sum(attribute='po_qty')}} pcs</h3>
             <table>
                 <tr>
+                    <th>No</th>
                     <th>Customer PO</th>
-                    <th>PO QTY</th>
-                    <th>Document date</th>
+                    <th>PO<br>QTY</th>
+                    <th>Document<br>date</th>
                 </tr>
                 {% for one_po in open_po %}
                 <tr>
+                    <td>{{ loop.index }}</td>
                     <td>{{ one_po.customer_po }}</td>
                     <td>{{ one_po.po_qty }}</td>
                     <td>{{ one_po.document_date }}</td>

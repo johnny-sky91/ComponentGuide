@@ -336,12 +336,16 @@ def component_view(id):
     component = Component.query.get(id)
     supplier_shipments = SupplierShipment.query.filter_by(component_id=id).all()
     incoming_shipments = IncomingShipment.query.filter_by(component_id=id).all()
-    component_stock = SupplierStock.query.filter_by(component_id=id).first()
-    if component_stock is None:
-        component_stock = 0
+    supplier_stock = SupplierStock.query.filter_by(component_id=id).first()
+    if supplier_stock is None:
+        supplier_stock = 0
     else:
-        component_stock = component_stock.supplier_stock_qty
+        supplier_stock = supplier_stock.supplier_stock_qty
+    # supplier_stock = max(0, supplier_stock.supplier_stock_qty)
+
     open_po = OpenPo.query.filter_by(component_id=id).all()
+    supplier_stock_left = max(0, supplier_stock - sum([x.po_qty for x in open_po]))
+
     comments = (
         ComponentComment.query.filter_by(component_id=id)
         .order_by(ComponentComment.id.desc())
@@ -361,10 +365,11 @@ def component_view(id):
         component=component,
         comments=comments,
         supplier_shipments=supplier_shipments,
-        component_stock=component_stock,
+        supplier_stock=supplier_stock,
         open_po=open_po,
         incoming_shipments=incoming_shipments,
         form=form,
+        supplier_stock_left=supplier_stock_left,
     )
 
 
