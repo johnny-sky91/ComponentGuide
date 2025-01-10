@@ -104,27 +104,42 @@ h3 {
         <div class="column_2">
             <h3> Quantities</h3>
             <table>
-            </tr>
-            <th>Free to order</th>
-                <td>{{ component.free_to_order_qty }}</td>
-                <td colspan="4">
-                    <form action="" method="post">
-                        {{ form.hidden_tag() }}
-                        {{ form.new_qty(style='height: 14px; width:50px') }}
-                        {{ form.submit() }}
-                    </form>
-                </td>
-            </tr>
-            </tr>
-                <th><a href="/incoming_shipments">Incoming shipments</a></th>
-                <td colspan="4">{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
-            </tr>
-            </tr>
-                <th><a href="/supplier_stock">Supplier stock</a></th>
-                <td colspan="2">{{ supplier_stock }}</td>
-                <th>Supplier stock left</th>
-                <td>{{ supplier_stock_left }}</td>
-            </tr>
+                <tr>
+                    <th>Stock</th>
+                    <td>{{ component.stock }}</td>
+                    <td colspan="4">
+                        <form action="{{ url_for('update_stock', id=component.id) }}" method="post">
+                            {{ form_stock.hidden_tag() }}
+                            {{ form_stock.new_stock(style='height: 14px; width:50px') }}
+                            {{ form_stock.submit_stock() }}
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Orders</th>
+                    <td>{{ component.orders }}</td>
+                    <td colspan="4">
+                        <form action="{{ url_for('update_orders', id=component.id) }}" method="post">
+                            {{ form_orders.hidden_tag() }}
+                            {{ form_orders.new_orders(style='height: 14px; width:50px') }}
+                            {{ form_orders.submit_orders() }}
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Free to order</th>
+                    <td>{{ free_to_order }}</td>
+                </tr>
+                </tr>
+                    <th><a href="/incoming_shipments">Incoming shipments</a></th>
+                    <td colspan="4">{{ incoming_shipments | sum(attribute='incoming_shipments_qty')}}</td>
+                </tr>
+                </tr>
+                    <th><a href="/supplier_stock">Supplier stock</a></th>
+                    <td colspan="2">{{ supplier_stock }}</td>
+                    <th>Supplier stock left</th>
+                    <td>{{ supplier_stock_left }}</td>
+                </tr>
             </table>
             <h3><a href="/supplier_shipments">Supplier shipments</a> - total: {{ supplier_shipments | sum(attribute='asn_qty') + supplier_shipments | sum(attribute='ssd_qty') }} pcs</h3>
             <table>
@@ -145,7 +160,7 @@ h3 {
                     <td>{{ shipment.mad_date }}</td>
                     <td>{{ moment(shipment.mad_date).format('W') }}</td>
                     <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
-                    <td>how many pcs left in this shipment</td>
+                    <td>qty</td>
                 </tr>
                 {% endfor %}
             </table> 

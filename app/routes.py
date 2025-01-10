@@ -27,7 +27,8 @@ from app.forms import (
     UpdateComponentLeadtime,
     UpdateComponentUnitPrice,
     UpdateComponentStatus,
-    UpdateComponentQty,
+    UpdateComponentStock,
+    UpdateComponentOrders,
 )
 from app.other_functions.data_preparation import (
     prepare_open_po,
@@ -331,9 +332,31 @@ def add_new_component():
     )
 
 
+@app.route("/update_stock/<int:id>", methods=["POST"])
+def update_stock(id):
+    component = Component.query.get_or_404(id)
+    form_stock = UpdateComponentStock()
+    if form_stock.validate_on_submit():
+        component.stock = form_stock.new_stock.data
+        db.session.commit()
+        flash("Stock updated!")
+    return redirect(request.referrer)
+
+
+@app.route("/update_orders/<int:id>", methods=["POST"])
+def update_orders(id):
+    component = Component.query.get_or_404(id)
+    form_orders = UpdateComponentOrders()
+    if form_orders.validate_on_submit():
+        component.orders = form_orders.new_orders.data
+        db.session.commit()
+        flash("Orders updated!")
+    return redirect(request.referrer)
+
+
 @app.route("/all_components/component_view/<int:id>", methods=["GET", "POST"])
 def component_view(id):
-    component = Component.query.get(id)
+    component = Component.query.get_or_404(id)
     supplier_shipments = SupplierShipment.query.filter_by(component_id=id).all()
     incoming_shipments = IncomingShipment.query.filter_by(component_id=id).all()
     supplier_stock = SupplierStock.query.filter_by(component_id=id).first()
@@ -341,23 +364,20 @@ def component_view(id):
         supplier_stock = 0
     else:
         supplier_stock = supplier_stock.supplier_stock_qty
-    # supplier_stock = max(0, supplier_stock.supplier_stock_qty)
 
     open_po = OpenPo.query.filter_by(component_id=id).all()
     supplier_stock_left = max(0, supplier_stock - sum([x.po_qty for x in open_po]))
-
+    free_to_order = (
+        component.stock + sum([x.po_qty for x in open_po]) - component.orders
+    )
     comments = (
         ComponentComment.query.filter_by(component_id=id)
         .order_by(ComponentComment.id.desc())
         .all()
     )
 
-    form = UpdateComponentQty()
-    if form.validate_on_submit():
-        component.free_to_order_qty = form.new_qty.data
-        db.session.commit()
-        flash(f"QTY updated!")
-        return redirect(request.referrer)
+    form_stock = UpdateComponentStock()
+    form_orders = UpdateComponentOrders()
 
     return render_template(
         "component.html",
@@ -368,8 +388,10 @@ def component_view(id):
         supplier_stock=supplier_stock,
         open_po=open_po,
         incoming_shipments=incoming_shipments,
-        form=form,
+        form_stock=form_stock,
+        form_orders=form_orders,
         supplier_stock_left=supplier_stock_left,
+        free_to_order=free_to_order,
     )
 
 

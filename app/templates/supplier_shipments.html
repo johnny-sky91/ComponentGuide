@@ -18,6 +18,7 @@
                 <th>SSD QTY</th>
                 <th>Total QTY</th>
                 <th>MAD date</th>
+                <th>MAD week</th>
             </tr>
         </thead>
         <tbody>
@@ -32,6 +33,7 @@
                     <td>{{ shipment[1].ssd_qty }}</td>
                     <td>{{ shipment[1].asn_qty + shipment[1].ssd_qty }}</td>
                     <td>{{ shipment[1].mad_date }}</td>
+                    <td>{{ moment(shipment[1].mad_date).format('W') }}</td>
                 </tr>
                 {% endfor %}
         </tbody>

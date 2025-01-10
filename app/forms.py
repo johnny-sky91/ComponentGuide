@@ -79,12 +79,20 @@ class UpdateComponentStatus(FlaskForm):
     submit = SubmitField("Update status")
 
 
-class UpdateComponentQty(FlaskForm):
-    new_qty = IntegerField(
+class UpdateComponentStock(FlaskForm):
+    new_stock = IntegerField(
         "New QTY",
         validators=[],
     )
-    submit = SubmitField("Update QTY")
+    submit_stock = SubmitField("Update stock qty")
+
+
+class UpdateComponentOrders(FlaskForm):
+    new_orders = IntegerField(
+        "New QTY",
+        validators=[],
+    )
+    submit_orders = SubmitField("Update orders qty")
 
 
 class AddComponentComment(FlaskForm):

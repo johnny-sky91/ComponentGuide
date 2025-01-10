@@ -14,7 +14,8 @@
                 <th>Note</th>
                 <th><a href="/all_components/check_true">Check</a></th>
                 <th><a href="/all_components/shortage_true">On shortage</a></th>
-                <th>Free to order</th>
+                <th>Stock</th>
+                <th>Orders</th>
                 <th>Incoming shipments</th>
                 <th>Supplier stock</th>
                 <th>Supplier shipments</th>
@@ -33,8 +34,8 @@
                     <td>{{ component.note }}</td>
                     <td><a href="{{ url_for('change_check', id=component.id) }}">{{ component.check }}</a></td>
                     <td><a href="{{ url_for('change_shortage', id=component.id) }}">{{ component.on_shortage }}</a></td>
-                    <td>{{ component.free_to_order_qty }}</td>
-
+                    <td>{{ component.stock }}</td>
+                    <td>{{ component.orders }}</td>
                     <td>
                         {% if component.incoming_shipment and component.incoming_shipment[0].incoming_shipments_qty %}
                             {{ component.incoming_shipment[0].incoming_shipments_qty }}
