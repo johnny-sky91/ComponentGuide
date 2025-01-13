@@ -354,6 +354,24 @@ def update_orders(id):
     return redirect(request.referrer)
 
 
+def remaining_from_shipments(shipments, initial_balance):
+    remaining = []
+    current_balance = initial_balance
+    for shipment in shipments:
+        if current_balance < 0:
+            if current_balance + shipment >= 0:
+                remaining.append(current_balance + shipment)
+                current_balance = 0
+            else:
+                remaining.append(0)
+                current_balance += shipment
+        else:
+            remaining.append(shipment)
+            current_balance += shipment
+
+    return remaining
+
+
 @app.route("/all_components/component_view/<int:id>", methods=["GET", "POST"])
 def component_view(id):
     component = Component.query.get_or_404(id)
@@ -375,6 +393,11 @@ def component_view(id):
         .order_by(ComponentComment.id.desc())
         .all()
     )
+    supplier_shipments_qty = [x.asn_qty + x.ssd_qty for x in supplier_shipments]
+    initial_balance_qty = supplier_stock - sum([x.po_qty for x in open_po])
+    remaining_supplier_shipments = remaining_from_shipments(
+        shipments=supplier_shipments_qty, initial_balance=initial_balance_qty
+    )
 
     form_stock = UpdateComponentStock()
     form_orders = UpdateComponentOrders()
@@ -392,6 +415,7 @@ def component_view(id):
         form_orders=form_orders,
         supplier_stock_left=supplier_stock_left,
         free_to_order=free_to_order,
+        remaining_supplier_shipments=remaining_supplier_shipments,
     )
 
 

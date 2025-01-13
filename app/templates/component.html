@@ -150,7 +150,7 @@ h3 {
                     <th>MAD date</th>
                     <th>MAD<br>week</th>
                     <th>Total<br>QTY</th>
-                    <th>Pcs left<br>QTY</th>
+                    <th>QTY<br>left</th>
                 </tr>
                 {% for shipment in supplier_shipments %}
                 <tr>
@@ -160,7 +160,7 @@ h3 {
                     <td>{{ shipment.mad_date }}</td>
                     <td>{{ moment(shipment.mad_date).format('W') }}</td>
                     <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
-                    <td>qty</td>
+                    <td>{{ remaining_supplier_shipments[loop.index-1] }}</td>
                 </tr>
                 {% endfor %}
             </table> 
