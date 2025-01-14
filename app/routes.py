@@ -563,8 +563,7 @@ def add_component_comment(id):
     form = AddComponentComment()
     if form.validate_on_submit():
         new_comment = ComponentComment(
-            component_id=id,
-            text=form.text.data,
+            component_id=id, text=form.text.data, timestamp=datetime.now()
         )
         db.session.add(new_comment)
         db.session.commit()

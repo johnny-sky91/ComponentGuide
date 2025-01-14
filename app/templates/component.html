@@ -94,7 +94,7 @@ h3 {
                 </tr>
                 {% for comment in comments %}
                 <tr>
-                    <td>{{ comment.timestamp }}</td>
+                    <td>{{ moment(comment.timestamp).format('DD/MM/YYYY') }}</td>
                     <td>{{ comment.text }}</td>
                     <td><a href="{{ url_for('remove_component_comment', comment_id=comment.id, id=comment.component_id) }}">Remove</a></td>
                 </tr>
