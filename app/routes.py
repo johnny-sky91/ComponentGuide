@@ -165,7 +165,9 @@ def update_open_po():
 def supplier_shipments():
     shipments = SupplierShipment.query.all()
     components = [Component.query.get(shipment.component_id) for shipment in shipments]
-    all_shipments_info = zip(components, shipments)
+    all_shipments_info = {
+        shipment: component for shipment, component in zip(shipments, components)
+    }
     return render_template(
         "supplier_shipments.html",
         title="Supplier shipments",

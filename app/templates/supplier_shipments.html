@@ -22,18 +22,18 @@
             </tr>
         </thead>
         <tbody>
-                {% for shipment in all_shipments_info %}
+                {% for shipment, component in all_shipments_info.items() %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td><a href="{{ url_for('component_view', id=shipment[0].id) }}">{{ shipment[0].material_number }}</td>
-                    <td>{{ shipment[0].manufacturer_part }}</td>
-                    <td>{{ shipment[1].supplier_po }}</td>
-                    <td>{{ shipment[1].customer_po }}</td>
-                    <td>{{ shipment[1].asn_qty }}</td>
-                    <td>{{ shipment[1].ssd_qty }}</td>
-                    <td>{{ shipment[1].asn_qty + shipment[1].ssd_qty }}</td>
-                    <td>{{ shipment[1].mad_date }}</td>
-                    <td>{{ moment(shipment[1].mad_date).format('W') }}</td>
+                    <td><a href="{{ url_for('component_view', id=component.id) }}">{{ component.material_number }}</td>
+                    <td>{{ component.manufacturer_part }}</td>
+                    <td>{{ shipment.supplier_po }}</td>
+                    <td>{{ shipment.customer_po }}</td>
+                    <td>{{ shipment.asn_qty }}</td>
+                    <td>{{ shipment.ssd_qty }}</td>
+                    <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
+                    <td>{{ shipment.mad_date }}</td>
+                    <td>{{ moment(shipment.mad_date).format('W') }}</td>
                 </tr>
                 {% endfor %}
         </tbody>
