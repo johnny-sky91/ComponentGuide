@@ -72,7 +72,9 @@ def all_components(what_view):
 def supplier_stock():
     components_stock = SupplierStock.query.order_by(SupplierStock.component_id.desc())
     components = [Component.query.get(stock.component_id) for stock in components_stock]
-    supplier_all_stock = zip(components, components_stock)
+    supplier_all_stock = {
+        stock: component for stock, component in zip(components_stock, components)
+    }
     total_value = round(
         sum(
             [
