@@ -77,10 +77,8 @@ def supplier_stock():
     }
     total_value = round(
         sum(
-            [
-                x[0].unit_price * x[1].supplier_stock_qty
-                for x in zip(components, components_stock)
-            ]
+            stock.supplier_stock_qty * component.unit_price
+            for stock, component in supplier_all_stock.items()
         )
     )
     total_value = f"{total_value:,}"
@@ -266,10 +264,8 @@ def incoming_shipments():
     }
     total_value = round(
         sum(
-            [
-                x[0].unit_price * x[1].incoming_shipments_qty
-                for x in zip(components, shipments)
-            ]
+            stock.incoming_shipments_qty * component.unit_price
+            for stock, component in all_shipments_info.items()
         )
     )
     total_value = f"{total_value:,}"
