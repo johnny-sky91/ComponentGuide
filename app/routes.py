@@ -257,7 +257,9 @@ def update_open_projects():
 def incoming_shipments():
     shipments = IncomingShipment.query.order_by(IncomingShipment.component_id.desc())
     components = [Component.query.get(shipment.component_id) for shipment in shipments]
-    all_shipments_info = zip(components, shipments)
+    all_shipments_info = {
+        shipment: component for shipment, component in zip(shipments, components)
+    }
     total_value = round(
         sum(
             [
@@ -266,8 +268,8 @@ def incoming_shipments():
             ]
         )
     )
-    total_qty = sum([x.incoming_shipments_qty for x in shipments])
     total_value = f"{total_value:,}"
+    total_qty = sum([x.incoming_shipments_qty for x in shipments])
     return render_template(
         "incoming_shipments.html",
         title="Incoming shipments",

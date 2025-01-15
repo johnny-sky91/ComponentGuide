@@ -18,13 +18,13 @@
                 <th>Total QTY</th>
         </thead>
         <tbody>
-                {% for shipment in all_shipments_info %}
+                {% for shipment, component in all_shipments_info.items() %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td><a href="{{ url_for('component_view', id=shipment[0].id) }}">{{ shipment[0].material_number }}</td>
-                    <td>{{ shipment[0].manufacturer_part }}</td>
-                    <td>{{ shipment[1].customer_po }}</td>
-                    <td>{{ shipment[1].incoming_shipments_qty }}</td>
+                    <td><a href="{{ url_for('component_view', id=component.id) }}">{{ component.material_number }}</td>
+                    <td>{{ component.manufacturer_part }}</td>
+                    <td>{{ shipment.customer_po }}</td>
+                    <td>{{ shipment.incoming_shipments_qty }}</td>
                 </tr>
                 {% endfor %}
         </tbody>
