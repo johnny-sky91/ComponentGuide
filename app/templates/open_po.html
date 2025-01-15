@@ -18,14 +18,14 @@
             </tr>
         </thead>
         <tbody>
-                {% for open_po in ready_open_po %}
+                {% for po, component in ready_open_po.items() %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{ open_po[1].document_date }}</td>
-                    <td>{{ open_po[1].customer_po }}</td>
-                    <td><a href="{{ url_for('component_view', id=open_po[0].id) }}">{{ open_po[0].material_number }}</td>
-                    <td>{{ open_po[0].manufacturer_part }}</td>
-                    <td>{{ open_po[1].po_qty }}</td>
+                    <td>{{ po.document_date }}</td>
+                    <td>{{ po.customer_po }}</td>
+                    <td><a href="{{ url_for('component_view', id=component.id) }}">{{ component.material_number }}</td>
+                    <td>{{ component.manufacturer_part }}</td>
+                    <td>{{ po.po_qty }}</td>
                 </tr>
                 {% endfor %}
         </tbody>

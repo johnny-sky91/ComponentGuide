@@ -82,11 +82,13 @@ def supplier_stock():
         )
     )
     total_value = f"{total_value:,}"
+    total_qty = sum([x.supplier_stock_qty for x in components_stock])
     return render_template(
         "supplier_stock.html",
         title="Supplier stock",
         supplier_all_stock=supplier_all_stock,
         total_value=total_value,
+        total_qty=total_qty,
     )
 
 
@@ -120,9 +122,9 @@ def update_supplier_stock():
 
 @app.route("/open_po", methods=["GET", "POST"])
 def open_po():
-    all_open_po = OpenPo.query.order_by(OpenPo.component_id.desc())
-    components = [Component.query.get(stock.component_id) for stock in all_open_po]
-    ready_open_po = zip(components, all_open_po)
+    all_open_po = OpenPo.query.order_by(OpenPo.document_date.asc())
+    components = [Component.query.get(po.component_id) for po in all_open_po]
+    ready_open_po = {po: component for po, component in zip(all_open_po, components)}
     return render_template(
         "open_po.html",
         title="Open PO",
@@ -264,12 +266,14 @@ def incoming_shipments():
             ]
         )
     )
+    total_qty = sum([x.incoming_shipments_qty for x in shipments])
     total_value = f"{total_value:,}"
     return render_template(
         "incoming_shipments.html",
         title="Incoming shipments",
         all_shipments_info=all_shipments_info,
         total_value=total_value,
+        total_qty=total_qty,
     )
 
 
