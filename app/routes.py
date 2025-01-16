@@ -49,19 +49,15 @@ def inject_date_cw():
 
 @app.route("/all_components/<what_view>", methods=["GET", "POST"])
 def all_components(what_view):
-
     query_mapping = {
         "check_true": {"check": True},
         "shortage_true": {"on_shortage": True},
     }
     components_query = Component.query
-
     if what_view.lower() in query_mapping:
         query_filters = query_mapping[what_view.lower()]
         components_query = components_query.filter_by(**query_filters)
-
     components = components_query.order_by(Component.id.asc()).all()
-
     return render_template(
         "all_components.html",
         title="All components",
@@ -377,6 +373,17 @@ def update_orders(id):
     return redirect(request.referrer)
 
 
+@app.route("/update_leadtime/<int:id>", methods=["POST"])
+def update_leadtime(id):
+    component = Component.query.get_or_404(id)
+    form_leadtime = UpdateComponentLeadtime()
+    if form_leadtime.validate_on_submit():
+        component.leadtime = form_leadtime.new_leadtime.data
+        db.session.commit()
+        flash("Leadtime updated!")
+    return redirect(request.referrer)
+
+
 def remaining_from_shipments(shipments, initial_balance):
     remaining = []
     current_balance = initial_balance
@@ -424,6 +431,7 @@ def component_view(id):
 
     form_stock = UpdateComponentStock()
     form_orders = UpdateComponentOrders()
+    form_leadtime = UpdateComponentLeadtime()
 
     return render_template(
         "component.html",
@@ -436,6 +444,7 @@ def component_view(id):
         incoming_shipments=incoming_shipments,
         form_stock=form_stock,
         form_orders=form_orders,
+        form_leadtime=form_leadtime,
         supplier_stock_left=supplier_stock_left,
         free_to_order=free_to_order,
         remaining_supplier_shipments=remaining_supplier_shipments,
@@ -493,25 +502,6 @@ def update_component_note(id):
         title=f"{component.material_number}",
         form=form,
         current_note=component.note,
-        component=component,
-    )
-
-
-@app.route(
-    "/all_components/component_view/<int:id>/update_leadtime", methods=["GET", "POST"]
-)
-def update_component_leadtime(id):
-    component = Component.query.get(id)
-    form = UpdateComponentLeadtime()
-    if form.validate_on_submit():
-        component.leadtime = form.leadtime.data
-        db.session.commit()
-        return redirect(request.referrer)
-    return render_template(
-        f"update/update_leadtime.html",
-        title=f"{component.material_number}",
-        form=form,
-        current_leadtime=component.leadtime,
         component=component,
     )
 

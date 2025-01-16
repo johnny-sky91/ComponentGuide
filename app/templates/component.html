@@ -56,7 +56,9 @@ h3 {
                 </tr>
                 <tr>
                     <th>Material number</th>
-                    <td colspan = "3"><button onClick="copyStringToClipboard('{{ component.material_number }}')">{{ component.material_number }}</button></td>
+                    <td><button onClick="copyStringToClipboard('{{ component.material_number }}')">{{ component.material_number }}</button></td>
+                    <th>Supplier material number</th>
+                    <td>{{ component.supplier_material_number }}</td>
                 </tr>
                 <tr>
                     <th>Material description</th>
@@ -65,14 +67,19 @@ h3 {
                 <tr>
                     <th>Manufacturer part</th>
                     <td>{{ component.manufacturer_part }}</td>
-                    <th>Supplier material number</th>
-                    <td>{{ component.supplier_material_number }}</td>
+                    <th>Unit price [$]</th>
+                    <td>{{ component.unit_price }}</td>
                 </tr>
                 <tr>
-                    <th><a href="{{ url_for('update_component_leadtime', id=component.id) }}">Leadtime [weeks]</a></th>
+                    <th>Leadtime [weeks]</th>
                     <td>{{ component.leadtime }}</td>
-                    <th><a href="{{ url_for('update_component_unit_price', id=component.id) }}">Unit price [$]</a></th>
-                    <td>{{ component.unit_price }}</td>
+                    <td colspan="4">
+                        <form action="{{ url_for('update_leadtime', id=component.id) }}" method="post">
+                            {{ form_leadtime.hidden_tag() }}
+                            {{ form_leadtime.new_leadtime(style='height: 14px; width:40px') }}
+                            {{ form_leadtime.submit_leadtime() }}
+                        </form>
+                    </td>
                 </tr>
                 </tr>
                     <th><a href="{{ url_for('update_component_note', id=component.id) }}">Note</a></th>
@@ -128,7 +135,7 @@ h3 {
                 </tr>
                 <tr>
                     <th>Free to order</th>
-                    <td>{{ free_to_order }}</td>
+                    <td colspan="4">{{ free_to_order }}</td>
                 </tr>
                 </tr>
                     <th><a href="/incoming_shipments">Incoming shipments</a></th>

@@ -56,11 +56,11 @@ class UpdateComponentNote(FlaskForm):
 
 
 class UpdateComponentLeadtime(FlaskForm):
-    leadtime = IntegerField(
+    new_leadtime = IntegerField(
         "New leadtime",
         validators=[DataRequired(message="New leadtime can't be empty")],
     )
-    submit = SubmitField("Update leadtime")
+    submit_leadtime = SubmitField("Update leadtime")
 
 
 class UpdateComponentUnitPrice(FlaskForm):
