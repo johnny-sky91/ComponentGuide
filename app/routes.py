@@ -1,4 +1,5 @@
 from datetime import datetime
+from sqlalchemy import func
 import pandas as pd
 import os
 from flask import (
@@ -164,12 +165,28 @@ def supplier_shipments():
     shipments = SupplierShipment.query.all()
     components = [Component.query.get(shipment.component_id) for shipment in shipments]
     all_shipments_info = {
-        shipment: component for shipment, component in zip(shipments, components)
+        shipment: {
+            "component": component,
+            "week": int(shipment.mad_date.strftime("%W")),
+        }
+        for shipment, component in zip(shipments, components)
     }
+
+    from collections import defaultdict
+
+    weekly_values = defaultdict(float)
+    for shipment, info in all_shipments_info.items():
+        week = info["week"]
+        value = round(
+            info["component"].unit_price * (shipment.asn_qty + shipment.ssd_qty)
+        )
+        weekly_values[week] += value
+
     return render_template(
         "supplier_shipments.html",
         title="Supplier shipments",
         all_shipments_info=all_shipments_info,
+        weekly_values=weekly_values,
     )
 
 

@@ -6,7 +6,25 @@
         <input type="file" name="file" accept=".xlsx, .xls" id="supplier_shipment">
         <input type="submit" value="Upload new data">
     </form>
-    <table>
+    <button id="toggleButton_1" onclick="toggleTable('supplier_shipments_table', 'toggleButton_1','Supplier Shipments')">Hide Supplier Shipment</button>
+    <button id="toggleButton_2" onclick="toggleTable('supplier_shipments_weekly_table', 'toggleButton_2','Supplier Shipments - weekly')">Hide Supplier Shipments - weekly</button>
+    <table id="supplier_shipments_weekly_table">
+        <thead>
+            <tr>
+                <th>Week</th>
+                <th>Total value [$]</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week, total_value in weekly_values.items() %}
+            <tr>
+                <td>{{ week }}</td>
+                <td>{{ total_value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <table id="supplier_shipments_table">
         <thead>
             <tr>
                 <th>No</th>
@@ -20,18 +38,18 @@
             </tr>
         </thead>
         <tbody>
-                {% for shipment, component in all_shipments_info.items() %}
-                <tr>
-                    <td>{{ loop.index }}</td>
-                    <td><a href="{{ url_for('component_view', id=component.id) }}">{{ component.material_number }}</td>
-                    <td>{{ component.manufacturer_part }}</td>
-                    <td>{{ shipment.supplier_po }}</td>
-                    <td>{{ shipment.customer_po }}</td>
-                    <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
-                    <td>{{ shipment.mad_date }}</td>
-                    <td>{{ moment(shipment.mad_date).format('W') }}</td>
-                </tr>
-                {% endfor %}
+            {% for shipment, info in all_shipments_info.items() %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><a href="{{ url_for('component_view', id=info['component'].id) }}">{{ info['component'].material_number }}</a></td>
+                <td>{{ info['component'].manufacturer_part }}</td>
+                <td>{{ shipment.supplier_po }}</td>
+                <td>{{ shipment.customer_po }}</td>
+                <td>{{ shipment.asn_qty + shipment.ssd_qty }}</td>
+                <td>{{ shipment.mad_date }}</td>
+                <td>{{ info['week'] }}</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </body>
