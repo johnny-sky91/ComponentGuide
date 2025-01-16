@@ -59,10 +59,41 @@ def all_components(what_view):
         components_query = components_query.filter_by(**query_filters)
 
     components = components_query.order_by(Component.id.asc()).all()
+
+    total_supplier_stock = [
+        0 if not x.supplier_stock else x.supplier_stock[0].supplier_stock_qty
+        for x in components
+    ]
+
+    total_supplier_shipments = [
+        0 if not x.supplier_shipment else x.supplier_shipment for x in components
+    ]
+
+    total_supplier_shipments = [
+        (
+            sum([shipment.asn_qty + shipment.ssd_qty for shipment in shipments])
+            if shipments != 0
+            else shipments
+        )
+        for shipments in total_supplier_shipments
+    ]
+
+    total_fto_plant = [x.stock - x.orders for x in components]
+
+    total_fto = [
+        fto_plant + supplier_stock + supplier_shipments
+        for fto_plant, supplier_stock, supplier_shipments in zip(
+            total_fto_plant, total_supplier_stock, total_supplier_shipments
+        )
+    ]
+    comments = [None if not x.comments else x.comments[-1].text for x in components]
+
     return render_template(
         "all_components.html",
         title="All components",
         components=components,
+        comments=comments,
+        total_fto=total_fto,
     )
 
 

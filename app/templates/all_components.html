@@ -15,12 +15,8 @@
                 <th>Note</th>
                 <th><a href="/all_components/check_true">Check</a></th>
                 <th><a href="/all_components/shortage_true">On shortage</a></th>
-                <th>Stock</th>
-                <th>Orders</th>
-                <th>Incoming shipments</th>
-                <th>Supplier stock</th>
-                <th>Supplier shipments</th>
-                <th>Open PO</th>
+                <th>FTO</th>
+                <th>Last comment</th>
             </tr>
         </thead>
         <tbody>
@@ -35,37 +31,8 @@
                     <td>{{ component.note }}</td>
                     <td><a href="{{ url_for('change_check', id=component.id) }}">{{ component.check }}</a></td>
                     <td><a href="{{ url_for('change_shortage', id=component.id) }}">{{ component.on_shortage }}</a></td>
-                    <td>{{ component.stock }}</td>
-                    <td>{{ component.orders }}</td>
-                    <td>
-                        {% if component.incoming_shipment and component.incoming_shipment[0].incoming_shipments_qty %}
-                            {{ component.incoming_shipment[0].incoming_shipments_qty }}
-                        {% else %}
-                            0
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if component.supplier_stock and component.supplier_stock[0].supplier_stock_qty %}
-                            {{ component.supplier_stock[0].supplier_stock_qty }}
-                        {% else %}
-                            0
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if component.supplier_shipment and component.supplier_shipment[0].ssd_qty %}
-                        {{ component.supplier_shipment | sum(attribute='asn_qty') + component.supplier_shipment | sum(attribute='ssd_qty') }}
-                        {% else %}
-                            0
-                        {% endif %}
-                    </td>
-
-                    <td>
-                        {% if component.open_po and component.open_po[0].po_qty %}
-                        {{ component.open_po | sum(attribute='po_qty')}}
-                        {% else %}
-                            0
-                        {% endif %}
-                    </td>
+                    <td>{{ total_fto[loop.index-1] }}</td>
+                    <td>{{ comments[loop.index-1] }}</td>
                 </tr>
                 {% endfor %}
         </tbody>
