@@ -1,15 +1,15 @@
 from datetime import datetime
 from sqlalchemy import func
 import pandas as pd
-import os
+import os, io
 from flask import (
     render_template,
     flash,
     redirect,
     url_for,
     request,
+    make_response,
 )
-
 from flask import current_app as app
 from app import db
 from app.models import (
@@ -57,12 +57,44 @@ def all_components(what_view):
     if what_view.lower() in query_mapping:
         query_filters = query_mapping[what_view.lower()]
         components_query = components_query.filter_by(**query_filters)
+
     components = components_query.order_by(Component.id.asc()).all()
     return render_template(
         "all_components.html",
         title="All components",
         components=components,
     )
+
+
+def table_to_dataframe(table_name):
+    data = table_name.query.all()
+    data_dicts = [
+        {
+            column.name: getattr(record, column.name)
+            for column in table_name.__table__.columns
+        }
+        for record in data
+    ]
+    df = pd.DataFrame(data_dicts)
+    return df
+
+
+@app.route("/all_components/download_data", methods=["GET", "POST"])
+def download_component_data():
+    components_df = table_to_dataframe(table_name=Component)
+    out = io.BytesIO()
+    writer = pd.ExcelWriter(out, engine="xlsxwriter")
+    components_df.to_excel(excel_writer=writer, index=False, sheet_name="Components")
+    writer._save()
+    download_response = make_response(out.getvalue())
+    now = datetime.now()
+    timestamp = now.strftime("%y%m%d")
+    filename = f"ComponentGuide_data_{timestamp}"
+    download_response.headers["Content-Disposition"] = (
+        f"attachment; filename={filename}.xlsx"
+    )
+    download_response.headers["Content-type"] = "application/x-xlsx"
+    return download_response
 
 
 @app.route("/supplier_stock", methods=["GET", "POST"])

@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 <body>
-    <a href="/all_components/add_new_component">Add new component</a>
+    <a href="/all_components/add_new_component" style="margin-right: 20px;">Add new component</a>
+    <a href="/all_components/download_data">Download component data</a>
     <table>
         <thead>
             <tr>
@@ -65,7 +66,6 @@
                             0
                         {% endif %}
                     </td>
-
                 </tr>
                 {% endfor %}
         </tbody>
