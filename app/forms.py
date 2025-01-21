@@ -101,3 +101,8 @@ class AddComponentComment(FlaskForm):
         validators=[DataRequired(message="New comment can't be empty")],
     )
     submit = SubmitField("Add comment")
+
+
+class SearchComponent(FlaskForm):
+    component = StringField("Search component", validators=[DataRequired()])
+    submit_search = SubmitField("Search")

@@ -30,6 +30,7 @@ from app.forms import (
     UpdateComponentStatus,
     UpdateComponentStock,
     UpdateComponentOrders,
+    SearchComponent,
 )
 from app.other_functions.data_preparation import (
     prepare_open_po,
@@ -57,6 +58,15 @@ def all_components(what_view):
     if what_view.lower() in query_mapping:
         query_filters = query_mapping[what_view.lower()]
         components_query = components_query.filter_by(**query_filters)
+
+    form_search = SearchComponent()
+
+    if form_search.submit_search.data and form_search.validate():
+        to_search = form_search.component.data
+        components_query = components_query.filter(
+            Component.material_number.like(f"%{to_search}%")
+            | Component.manufacturer_part.like(f"%{to_search}%")
+        )
 
     components = components_query.order_by(Component.id.asc()).all()
 
@@ -94,6 +104,7 @@ def all_components(what_view):
         components=components,
         comments=comments,
         total_fto=total_fto,
+        form_search=form_search,
     )
 
 
@@ -559,7 +570,7 @@ def update_component_note(id):
     if form.validate_on_submit():
         component.note = form.note.data
         db.session.commit()
-        return redirect(request.referrer)
+        return redirect(url_for("component_view", id=id))
     return render_template(
         f"update/update_note.html",
         title=f"{component.material_number}",

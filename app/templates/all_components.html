@@ -3,6 +3,17 @@
 <body>
     <a href="/all_components/add_new_component" style="margin-right: 20px;">Add new component</a>
     <a href="/all_components/download_data">Download component data</a>
+    <form action="" method="post" novalidate>
+        {{form_search.hidden_tag()}}
+        <p style="font-size:18px">
+          {{ form_search.component.label }}:
+          {{ form_search.component(style='height: 20px; width:200px') }}
+          {{ form_search.submit_search() }}
+          {% for error in form_search.component.errors %}
+          <span style="color: red;">{{ error }}</span>
+          {% endfor %}<br>
+        </p>
+      </form>
     <table>
         <thead>
             <tr>
