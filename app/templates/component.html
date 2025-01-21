@@ -66,7 +66,7 @@ h3 {
                 </tr>
                 <tr>
                     <th>Manufacturer part</th>
-                    <td>{{ component.manufacturer_part }}</td>
+                    <td><button onClick="copyStringToClipboard('{{ component.manufacturer_part }}')">{{ component.manufacturer_part }}</button></td>
                     <th>Unit price [$]</th>
                     <td>{{ component.unit_price }}</td>
                 </tr>
@@ -132,6 +132,10 @@ h3 {
                             {{ form_orders.submit_orders() }}
                         </form>
                     </td>
+                </tr>
+                <tr>
+                    <th>Stock - orders</th>
+                    <td colspan="4">{{ component.stock - component.orders }}</td>
                 </tr>
                 <tr>
                     <th>Free to order</th>
