@@ -419,7 +419,7 @@ def add_new_component():
         db.session.add(new_component)
         db.session.commit()
         flash(f"New component added - {new_component.material_number}")
-        return redirect(url_for("all_components"))
+        return redirect(request.referrer)
     return render_template(
         "add/add_new_component.html", title="Add new Component", form=form
     )
@@ -478,6 +478,7 @@ def remaining_from_shipments(shipments, initial_balance):
 
 @app.route("/all_components/component_view/<int:id>", methods=["GET", "POST"])
 def component_view(id):
+    all_components_count = len(Component.query.all())
     component = Component.query.get_or_404(id)
     supplier_shipments = SupplierShipment.query.filter_by(component_id=id).all()
     incoming_shipments = IncomingShipment.query.filter_by(component_id=id).all()
@@ -522,6 +523,7 @@ def component_view(id):
         supplier_stock_left=supplier_stock_left,
         free_to_order=free_to_order,
         remaining_supplier_shipments=remaining_supplier_shipments,
+        all_components_count=all_components_count,
     )
 
 

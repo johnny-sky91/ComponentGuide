@@ -50,7 +50,7 @@ h3 {
             <table>
                 <tr>
                     <th>ID</th>
-                    <td>{{ component.id }}</td>
+                    <td>{{ component.id }} (of {{ all_components_count }})</td>
                     <th><a href="{{ url_for('update_component_status', id=component.id) }}">Status</a></th>
                     <td>{{ component.status }}</td>
                 </tr>
