@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+    <a href="{{ url_for('add_new_various') }}">Add new various</a>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Various name</th>
+                <th>Various value</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% for various in all_various %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ various.value_name }}</td>
+                    <td>{{ various.value }}</td>
+                {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock %}

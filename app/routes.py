@@ -20,6 +20,7 @@ from app.models import (
     OpenPo,
     IncomingShipment,
     Project,
+    VariousValues,
 )
 from app.forms import (
     AddComponent,
@@ -31,6 +32,7 @@ from app.forms import (
     UpdateComponentStock,
     UpdateComponentOrders,
     SearchComponent,
+    AddNewVarious,
 )
 from app.other_functions.data_preparation import (
     prepare_open_po,
@@ -485,6 +487,81 @@ def remaining_from_shipments(shipments, initial_balance):
     return remaining
 
 
+@app.route("/summary", methods=["GET", "POST"])
+def summary_view():
+    components = Component.query.all()
+    gross_plant_stock_qty = sum([component.stock for component in components])
+    gross_plant_stock_value = round(
+        sum([component.stock * component.unit_price for component in components])
+    )
+    gross_plant_stock_value = f"{gross_plant_stock_value:,}"
+
+    net_plant_stock_qty = sum(
+        [component.stock - component.orders for component in components]
+    )
+    net_plant_stock_value = round(
+        sum(
+            [
+                (component.stock - component.orders) * component.unit_price
+                for component in components
+            ]
+        )
+    )
+    net_plant_stock_value = f"{net_plant_stock_value:,}"
+
+    components_stock = SupplierStock.query.order_by(SupplierStock.component_id.desc())
+    components = [Component.query.get(stock.component_id) for stock in components_stock]
+    supplier_all_stock = {
+        stock: component for stock, component in zip(components_stock, components)
+    }
+    supplier_stock_value = round(
+        sum(
+            stock.supplier_stock_qty * component.unit_price
+            for stock, component in supplier_all_stock.items()
+        )
+    )
+    supplier_stock_value = f"{supplier_stock_value:,}"
+    supplier_stock_qty = sum([x.supplier_stock_qty for x in components_stock])
+
+    supplier_stock_value_target = VariousValues.query.filter_by(
+        value_name="dos_supply_level"
+    ).first()
+    if supplier_stock_value_target is not None:
+        supplier_stock_value_target = (
+            f"{round(float(supplier_stock_value_target.value)):,}"
+        )
+    else:
+        supplier_stock_value_target = 0.0
+    shipments = IncomingShipment.query.order_by(IncomingShipment.component_id.desc())
+    components = [Component.query.get(shipment.component_id) for shipment in shipments]
+    all_shipments_info = {
+        shipment: component for shipment, component in zip(shipments, components)
+    }
+    incoming_shipments_plant_stock_value = round(
+        sum(
+            stock.incoming_shipments_qty * component.unit_price
+            for stock, component in all_shipments_info.items()
+        )
+    )
+    incoming_shipments_plant_stock_value = f"{incoming_shipments_plant_stock_value:,}"
+    incoming_shipments_plant_stock_qty = sum(
+        [x.incoming_shipments_qty for x in shipments]
+    )
+    return render_template(
+        "summary.html",
+        title=f"Summary",
+        gross_plant_stock_qty=gross_plant_stock_qty,
+        gross_plant_stock_value=gross_plant_stock_value,
+        net_plant_stock_qty=net_plant_stock_qty,
+        net_plant_stock_value=net_plant_stock_value,
+        supplier_stock_qty=supplier_stock_qty,
+        supplier_stock_value=supplier_stock_value,
+        supplier_stock_value_target=supplier_stock_value_target,
+        incoming_shipments_plant_stock_qty=incoming_shipments_plant_stock_qty,
+        incoming_shipments_plant_stock_value=incoming_shipments_plant_stock_value,
+    )
+
+
 @app.route("/all_components/component_view/<int:id>", methods=["GET", "POST"])
 def component_view(id):
     all_components_count = len(Component.query.all())
@@ -682,3 +759,34 @@ def remove_component_comment(id, comment_id):
     ComponentComment.query.filter_by(id=comment_id, component_id=id).delete()
     db.session.commit()
     return redirect(request.referrer)
+
+
+@app.route("/various", methods=["GET", "POST"])
+def various_view():
+    all_various = VariousValues.query.all()
+    for x in all_various:
+        print(x.value_name, x.value)
+    return render_template(
+        f"various.html",
+        title=f"Various",
+        all_various=all_various,
+    )
+
+
+@app.route("/various/add_new_various", methods=["GET", "POST"])
+def add_new_various():
+    form = AddNewVarious()
+    if form.validate_on_submit():
+        new_various = VariousValues(
+            value_name=form.new_various_name.data, value=form.new_various_value.data
+        )
+        db.session.add(new_various)
+        db.session.commit()
+        flash(f"New various added")
+        return redirect(url_for("various_view"))
+
+    return render_template(
+        f"add/add_new_various.html",
+        title=f"Add new various",
+        form=form,
+    )

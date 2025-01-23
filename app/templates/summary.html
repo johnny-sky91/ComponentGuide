@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+    <p>Gross plant stock QTY: {{ gross_plant_stock_qty }} | value: ${{ gross_plant_stock_value }}</p>
+    <p>Net plant stock QTY: {{ net_plant_stock_qty }} | value: ${{ net_plant_stock_value }}</p>
+    <p>Incoming shipments - plant QTY: {{ incoming_shipments_plant_stock_qty }} | value: ${{ incoming_shipments_plant_stock_value }}</p>
+    <p>Supplier stock QTY: {{ supplier_stock_qty}} | value: ${{ supplier_stock_value }}</p>
+    <p>Supplier stock value target: ${{ supplier_stock_value_target }}</p>
+</body>
+{% endblock %}

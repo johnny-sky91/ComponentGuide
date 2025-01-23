@@ -85,3 +85,10 @@ class Project(db.Model):
     ddo_status = db.Column(db.String(64), default=None)
     ddo_end_date = db.Column(db.Date)
     project_status = db.Column(db.String(64), default=None)
+
+
+class VariousValues(db.Model):
+    __tablename__ = "various_values"
+    id = db.Column(db.Integer, primary_key=True)
+    value_name = db.Column(db.String(128), unique=True, nullable=False)
+    value = db.Column(db.String(128), nullable=False)

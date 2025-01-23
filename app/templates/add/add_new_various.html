@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p>Add new various</p>
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    {{ form.new_various_name.label }}:{{ form.new_various_name(style='width:300px') }}<br>
+    {{ form.new_various_value.label }}:{{ form.new_various_value(style='width:300px') }}<br>
+    {{ form.submit() }} <br>
+    {% for error in form.new_various_name.errors %}
+    <span style="color: red;">{{ error }}</span>
+    {% endfor %}<br>
+    </p>
+</form>
+
+{% endblock %}
