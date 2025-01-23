@@ -366,9 +366,18 @@ def incoming_shipments():
     )
 
 
-@app.route("/incoming_shipments/clear_incoming_shipments", methods=["GET", "POST"])
-def clear_incoming_shipments():
+@app.route("/incoming_shipments/clear_all_incoming_shipments", methods=["GET", "POST"])
+def clear_all_incoming_shipments():
     IncomingShipment.query.delete()
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@app.route(
+    "/incoming_shipments/clear_one_incoming_shipments/<int:id>", methods=["GET", "POST"]
+)
+def clear_one_incoming_shipments(id):
+    IncomingShipment.query.filter_by(id=id).delete()
     db.session.commit()
     return redirect(request.referrer)
 

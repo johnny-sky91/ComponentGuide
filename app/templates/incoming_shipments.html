@@ -6,7 +6,7 @@
         <input type="file" name="file" accept=".xlsx, .xls" id="incoming_shipment">
         <input type="submit" value="Upload new data">
     </form>
-    <a href="/incoming_shipments/clear_incoming_shipments">Clear shipments</a>
+    <a href="/incoming_shipments/clear_all_incoming_shipments">Clear all incoming shipments</a>
     <h4>Total shipments value: {{ total_value }} $ | Total shipments qty: {{ total_qty }} pcs</h4>
     <table>
         <thead>
@@ -16,6 +16,7 @@
                 <th>Manufacturer part</th>
                 <th>Customer PO</th>
                 <th>Total QTY</th>
+                <th>Action</th>
         </thead>
         <tbody>
                 {% for shipment, component in all_shipments_info.items() %}
@@ -25,6 +26,7 @@
                     <td>{{ component.manufacturer_part }}</td>
                     <td>{{ shipment.customer_po }}</td>
                     <td>{{ shipment.incoming_shipments_qty }}</td>
+                    <td><a href="{{ url_for('clear_one_incoming_shipments', id=shipment.id) }}">Remove</td>
                 </tr>
                 {% endfor %}
         </tbody>
