@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def prepare_open_po(open_po_file):
+def df_open_po(open_po_file):
     data = pd.read_excel(open_po_file)
     ready_list = [
         "Purchasing Document",
@@ -14,7 +14,7 @@ def prepare_open_po(open_po_file):
     return ready_data
 
 
-def prepare_supplier_stock(stock_file):
+def df_supplier_stock(stock_file):
     data = pd.read_excel(stock_file)
     ready_list = [
         "Calendar Day",
@@ -26,7 +26,7 @@ def prepare_supplier_stock(stock_file):
     return ready_data
 
 
-def prepare_supplier_shipments(shipment_file):
+def df_supplier_shipments(shipment_file):
     data = pd.read_excel(shipment_file)
     data.columns = data.iloc[0]
     data = data.iloc[1:, :]
@@ -45,7 +45,7 @@ def prepare_supplier_shipments(shipment_file):
     return ready_data
 
 
-def prepare_open_projects(project_file):
+def df_open_projects(project_file):
     data = pd.read_excel(project_file)
     data.columns = data.iloc[4]
     data = data.iloc[5:]
@@ -65,7 +65,7 @@ def prepare_open_projects(project_file):
     return ready_data
 
 
-def prepare_incoming_shipments(shipment_file):
+def df_incoming_shipments(shipment_file):
     data = pd.read_excel(shipment_file)
     ready_list = [
         "Customer Part #",

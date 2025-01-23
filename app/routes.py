@@ -35,11 +35,11 @@ from app.forms import (
     AddNewVarious,
 )
 from app.other_functions.data_preparation import (
-    prepare_open_po,
-    prepare_supplier_shipments,
-    prepare_open_projects,
-    prepare_supplier_stock,
-    prepare_incoming_shipments,
+    df_open_po,
+    df_supplier_shipments,
+    df_open_projects,
+    df_supplier_stock,
+    df_incoming_shipments,
 )
 
 
@@ -171,7 +171,7 @@ def update_supplier_stock():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    supplier_stock = prepare_supplier_stock(stock_file=file)
+    supplier_stock = df_supplier_stock(stock_file=file)
     for index, row in supplier_stock.iterrows():
         try:
             component = (
@@ -211,7 +211,7 @@ def update_open_po():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    all_open_po = prepare_open_po(open_po_file=file)
+    all_open_po = df_open_po(open_po_file=file)
     for index, row in all_open_po.iterrows():
         try:
             component = (
@@ -239,7 +239,7 @@ def supplier_shipments():
     all_shipments_info = {
         shipment: {
             "component": component,
-            "week": int(shipment.mad_date.strftime("%W")),
+            "week": shipment.mad_date.isocalendar()[1],
         }
         for shipment, component in zip(shipments, components)
     }
@@ -268,7 +268,7 @@ def update_supplier_shipments():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    supplier_shipments = prepare_supplier_shipments(shipment_file=file)
+    supplier_shipments = df_supplier_shipments(shipment_file=file)
     for index, row in supplier_shipments.iterrows():
         try:
             component = (
@@ -311,7 +311,7 @@ def update_open_projects():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    open_projects = prepare_open_projects(project_file=file)
+    open_projects = df_open_projects(project_file=file)
     for index, row in open_projects.iterrows():
         new_ddo_end_date = row["DDO end date"]
         new_project_qty = row["QTY"]
@@ -390,7 +390,7 @@ def update_incoming_shipments():
     db.session.commit()
     file = request.files["file"]
     file.save(file.filename)
-    incoming_shipments = prepare_incoming_shipments(shipment_file=file)
+    incoming_shipments = df_incoming_shipments(shipment_file=file)
     for index, row in incoming_shipments.iterrows():
         new_customer_po = row["FTS order"]
         if pd.isna(new_customer_po):
