@@ -46,7 +46,7 @@ h3 {
     <a href="{{ url_for('next_component', step='forward', id=component.id) }}">Next</a>
     <div class="container">
         <div class="column_1">
-            <h3>Basic info</h3>
+            <h3>1. Basic info</h3>
             <table>
                 <tr>
                     <th>ID</th>
@@ -109,10 +109,10 @@ h3 {
             </table> 
         </div>
         <div class="column_2">
-            <h3> Quantities</h3>
+            <h3>2. Quantities</h3>
             <table>
                 <tr>
-                    <th>Stock</th>
+                    <th>A - Stock</th>
                     <td>{{ component.stock }}</td>
                     <td colspan="5">
                         <form action="{{ url_for('update_stock', id=component.id) }}" method="post">
@@ -123,7 +123,7 @@ h3 {
                     </td>
                 </tr>
                 <tr>
-                    <th>Orders</th>
+                    <th>B - Orders</th>
                     <td>{{ component.orders }}</td>
                     <td colspan="5">
                         <form action="{{ url_for('update_orders', id=component.id) }}" method="post">
@@ -134,19 +134,21 @@ h3 {
                     </td>
                 </tr>
                 </tr>
-                    <th>Free to order</th>
-                    <td colspan="4">{{ free_to_order }}</td>
-                    <th>Stock - orders</th>
+                    <th>C - Free to order - plant (A - B)</th>
                     <td colspan="4">{{ component.stock - component.orders }}</td>
+                    <th>D - Free to order - total (C + F)</th>
+                    <td colspan="4">{{ free_to_order }}</td>
                 </tr>
                 </tr>
-                    <th><a href="/incoming_shipments">Incoming shipments</a></th>
+                    <th><a href="/incoming_shipments">E - Incoming shipments - plant</a></th>
                     <td colspan="4">{{ incoming_shipments | sum(attribute='incoming_shipments_qty') }}</td>
+                    <th><a href="/open_po">F - Open PO</a></th>
+                    <td colspan="4">{{ open_po | sum(attribute='po_qty') }}</td>
                 </tr>
                 </tr>
-                    <th><a href="/supplier_stock">Supplier stock</a></th>
+                    <th><a href="/supplier_stock">G - Supplier stock</a></th>
                     <td colspan="4">{{ supplier_stock }}</td>
-                    <th>Supplier stock left</th>
+                    <th>H - Supplier stock left</th>
                     <td>{{ supplier_stock_left }}</td>
                 </tr>
             </table>
@@ -175,7 +177,7 @@ h3 {
             </table> 
         </div>
         <div class="column_3">
-            <h3><a href="/open_po">Open PO</a> - total: {{ open_po | sum(attribute='po_qty')}} pcs</h3>
+            <h3><a href="/open_po">3. Open PO</a> - total: {{ open_po | sum(attribute='po_qty')}} pcs</h3>
             <table>
                 <tr>
                     <th>No</th>
@@ -196,7 +198,7 @@ h3 {
     </div>
     <div>
         <div class="column_4">
-            <h3><a href="/open_projects">Projects</a> - total: {{ component.project | sum(attribute='project_qty')}} pcs</h3>
+            <h3><a href="/open_projects">4. Projects</a> - total: {{ component.project | sum(attribute='project_qty')}} pcs</h3>
             <table>
                 <tr>
                     <th>Customer</th>
