@@ -114,7 +114,7 @@ h3 {
                 <tr>
                     <th>Stock</th>
                     <td>{{ component.stock }}</td>
-                    <td colspan="4">
+                    <td colspan="5">
                         <form action="{{ url_for('update_stock', id=component.id) }}" method="post">
                             {{ form_stock.hidden_tag() }}
                             {{ form_stock.new_stock(style='height: 14px; width:50px') }}
@@ -125,7 +125,7 @@ h3 {
                 <tr>
                     <th>Orders</th>
                     <td>{{ component.orders }}</td>
-                    <td colspan="4">
+                    <td colspan="5">
                         <form action="{{ url_for('update_orders', id=component.id) }}" method="post">
                             {{ form_orders.hidden_tag() }}
                             {{ form_orders.new_orders(style='height: 14px; width:50px') }}
@@ -133,13 +133,11 @@ h3 {
                         </form>
                     </td>
                 </tr>
-                <tr>
-                    <th>Stock - orders</th>
-                    <td colspan="4">{{ component.stock - component.orders }}</td>
                 </tr>
-                <tr>
                     <th>Free to order</th>
                     <td colspan="4">{{ free_to_order }}</td>
+                    <th>Stock - orders</th>
+                    <td colspan="4">{{ component.stock - component.orders }}</td>
                 </tr>
                 </tr>
                     <th><a href="/incoming_shipments">Incoming shipments</a></th>
@@ -147,7 +145,7 @@ h3 {
                 </tr>
                 </tr>
                     <th><a href="/supplier_stock">Supplier stock</a></th>
-                    <td colspan="2">{{ supplier_stock }}</td>
+                    <td colspan="4">{{ supplier_stock }}</td>
                     <th>Supplier stock left</th>
                     <td>{{ supplier_stock_left }}</td>
                 </tr>
