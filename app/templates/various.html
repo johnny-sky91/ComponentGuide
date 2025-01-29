@@ -15,7 +15,7 @@
                 <tr>
                     <td>{{ loop.index }}</td>
                     <td>{{ various.value_name }}</td>
-                    <td>{{ various.value }}</td>
+                    <td><a href="{{ url_for('update_various', id=various.id) }}">{{ various.value }}</a></td>
                 {% endfor %}
         </tbody>
     </table>

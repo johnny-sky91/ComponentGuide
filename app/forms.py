@@ -112,3 +112,8 @@ class AddNewVarious(FlaskForm):
     new_various_name = StringField("Various name", validators=[DataRequired()])
     new_various_value = StringField("Various value", validators=[DataRequired()])
     submit = SubmitField("Add various")
+
+
+class UpdateVarious(FlaskForm):
+    new_various_value = StringField("Various value", validators=[DataRequired()])
+    submit = SubmitField("Update various")

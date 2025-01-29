@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p>Update value of various: {{ various.value_name }} </p>
+<p>Current value of various: {{ various.value }} </p>
+
+<form action="" method="post" novalidate>
+    {{form_various.hidden_tag()}}
+    <p style="font-size:18px">
+        {{ form_various.new_various_value.label }}: {{ form_various.new_various_value(style='height: 20px; width:200px') }}<br><br>
+        {{ form_various.submit() }} <br>
+        {% for error in form_various.new_various_value.errors %}
+        <span style="color: red;">{{ error }}</span>
+        {% endfor %}<br>
+    </p>
+</form>
+{% endblock %}

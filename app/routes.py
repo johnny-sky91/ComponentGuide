@@ -33,6 +33,7 @@ from app.forms import (
     UpdateComponentOrders,
     SearchComponent,
     AddNewVarious,
+    UpdateVarious,
 )
 from app.other_functions.data_preparation import (
     df_open_po,
@@ -417,6 +418,23 @@ def update_incoming_shipments():
     return redirect(request.referrer)
 
 
+@app.route("/various/update_various/<int:id>", methods=["GET", "POST"])
+def update_various(id):
+    various = VariousValues.query.get_or_404(id)
+    form_various = UpdateVarious()
+    if form_various.validate_on_submit():
+        various.value = form_various.new_various_value.data
+        db.session.commit()
+        flash("Various updated!")
+        return redirect(url_for("various_view"))
+    return render_template(
+        f"update/update_various.html",
+        title=f"{various.value_name}",
+        form_various=form_various,
+        various=various,
+    )
+
+
 @app.route("/all_components/add_new_component", methods=["GET", "POST"])
 def add_new_component():
     form = AddComponent()
@@ -764,8 +782,6 @@ def remove_component_comment(id, comment_id):
 @app.route("/various", methods=["GET", "POST"])
 def various_view():
     all_various = VariousValues.query.all()
-    for x in all_various:
-        print(x.value_name, x.value)
     return render_template(
         f"various.html",
         title=f"Various",
