@@ -67,7 +67,7 @@ h3 {
                 <tr>
                     <th>Manufacturer part</th>
                     <td><button onClick="copyStringToClipboard('{{ component.manufacturer_part }}')">{{ component.manufacturer_part }}</button></td>
-                    <th>Unit price [$]</th>
+                    <th><a href="{{ url_for('update_component_unit_price', id=component.id) }}">Unit price [$]</a></th>
                     <td>{{ component.unit_price }}</td>
                 </tr>
                 <tr>
